@@ -1,7 +1,7 @@
 {
   "name": "diamond",
   "version": "1.0.0",
-  "description": "javasrcipt utils",
+  "description": "javascript utils",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -10,7 +10,8 @@
   },
   "files": [
     "dist",
-    "index.ts"
+    "es",
+    "cjs"
   ],
   "repository": {
     "type": "git",
