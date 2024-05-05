@@ -20,8 +20,8 @@ export function sync(src:string,dst:string,callback:Function) {
     fs.readdirSync(src,{withFileTypes:true}).forEach(
         file => {
             const path = src+"/"+file.name;
-            const dstpath = dst+"/"+file.name;
             if (file.isDirectory()) {
+                const dstpath = dst+"/"+file.name;
                 sync(path,dstpath,callback)
             }else {
                 callback(file.name,path,dst)

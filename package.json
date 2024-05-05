@@ -4,6 +4,7 @@
   "description": "javascript utils",
   "main": "index.js",
   "type": "module",
+  "node": ">v20.1.0",
   "scripts": {
     "rollup:build": "rollup -c rollup.config.js",
     "test": "vitest"
