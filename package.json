@@ -6,6 +6,16 @@
   "type": "module",
   "node": ">v20.1.0",
   "packageManager": "pnpm@9.1.0",
+  "exports": {
+    ".": {
+      "import": "./esm/index.mjs",
+      "require": "./cjs/index.cjs"
+    },
+    "./*": {
+      "import": "./es/*",
+      "require": "./cjs/*"
+    }
+  },
   "scripts": {
     "rollup:build": "rollup -c rollup.config.js",
     "test": "vitest"
