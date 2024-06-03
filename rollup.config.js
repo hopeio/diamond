@@ -15,8 +15,9 @@ const pkgName = packageJson.name;
 const __dirname = path.dirname(__filename);
 
 const pathResolve = (p) => path.resolve(__dirname, p);
-const input = Object.fromEntries(
-    glob.sync('src/**/*.(ts|js)',{ignore:[`src/**/*.test.(ts|js)`]}).map((file) => [
+const input = glob.sync('src/**/*.(ts|js)', {ignore: [`src/**/*.test.(ts|js)`]});
+const Namedinput = Object.fromEntries(
+    input.map((file) => [
         // 这里将删除 `src/` 以及每个文件的扩展名。
         // 因此，例如 src/nested/foo.js 会变成 nested/foo
         path.relative(
@@ -28,7 +29,10 @@ const input = Object.fromEntries(
         fileURLToPath(new URL(file, import.meta.url))
     ])
 )
+
+
 const plugin = [
+    resolve(),
     commonjs({
         include: /node_modules/
     }),
@@ -40,7 +44,6 @@ const plugin = [
         }
     }),
     json(),
-    resolve(),
 ];
 
 function plugins(mode) {
@@ -49,31 +52,42 @@ function plugins(mode) {
         config = `./tsconfig.${mode}.json`;
     }
     return [...plugin, typescript({
-        tsconfig: config,
+        tsconfig: config
     })]
 }
 
 export default [{
-    input: input,
-    output: {
+    input: Namedinput,
+    output: [{
+        dir: "es",
+        format: "esm",
+        entryFileNames: '[name].mjs'
+        //preserverModules:true
+    },
+    {
         dir: "es",
         format: "esm",
         //preserverModules:true
-    },
+    }],
     plugins: plugins('esm'),
 },
     {
-        input: input,
-        output: {
-                dir: "cjs",
-                format: "cjs",
-                //preserverModules:true
-            },
+        input: Namedinput,
+        output: [{
+            dir: "cjs",
+            format: "cjs",
+            entryFileNames: '[name].cjs'
+            //preserverModules:true
+        },
+        {
+            dir: "cjs",
+            format: "cjs",
+            //preserverModules:true
+        }],
         plugins: plugins('cjs'),
     },
-
     {
-        input: 'src/index.ts',
+        input: "src/index.ts",
         output: [{
             file: "dist/umd.js",
             format: "umd",
@@ -84,12 +98,15 @@ export default [{
                 "task-queue-lib": "TaskQueue",
             },
         },
-            {
-                file: "dist/bundle.js",
-                format: "iife",
-                name: pkgName,
-                plugins: [terser()],
-            }],
-        plugins: plugins(),
+        {
+            file: "dist/amd.js",
+            format: "amd",
+        },
+        {
+            file: "dist/iife.js",
+            format: "iife",
+            name: pkgName,
+        }],
+        plugins: [...plugins(),terser()],
     }
 ];
