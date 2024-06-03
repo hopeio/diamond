@@ -70,6 +70,7 @@ export default [{
         //preserverModules:true
     }],
     plugins: plugins('esm'),
+    external: ['**/node_modules/**']
 },
     {
         input: Namedinput,
@@ -85,6 +86,7 @@ export default [{
             //preserverModules:true
         }],
         plugins: plugins('cjs'),
+        external: ['**/node_modules/**']
     },
     {
         input: "src/index.ts",
@@ -108,5 +110,6 @@ export default [{
             name: pkgName,
         }],
         plugins: [...plugins(),terser()],
+        external: ['**/node_modules/**']
     }
 ];
