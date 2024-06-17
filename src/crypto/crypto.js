@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 /**
  * 解密
  * @param dataStr {string}
@@ -5,7 +6,7 @@
  * @param iv {string}
  * @return {string}
  */
-function Decrypt(dataStr, key, iv) {
+function decrypt(dataStr, key, iv) {
     let cipherChunks = [];
     let decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
     decipher.setAutoPadding(true);
@@ -21,7 +22,7 @@ function Decrypt(dataStr, key, iv) {
  * @param iv {string}
  * @return {string}
  */
-function Encrypt(dataStr, key, iv) {
+function encrypt(dataStr, key, iv) {
     let cipherChunks = [];
     let cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
     cipher.setAutoPadding(true);
