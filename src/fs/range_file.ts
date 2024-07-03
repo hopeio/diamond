@@ -7,7 +7,7 @@ export function range(dir:string,callback:Function) {
             if (file.isDirectory()) {
                 range(path,callback)
             }else {
-                callback(file.name,path,dir)
+                callback(dir,file.name,path)
             }
         }
     )

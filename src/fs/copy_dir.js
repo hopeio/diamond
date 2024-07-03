@@ -1,7 +1,7 @@
 
 import  fs from 'fs'
 
-function copy_dir(src, dest) {
+function copyDir(src, dest) {
     if (!fs.existsSync(dest)){
         fs.mkdirSync(dest)
     }
@@ -10,7 +10,7 @@ function copy_dir(src, dest) {
             let path = src+"/"+file;
             let stat = fs.statSync(path);
             if (stat.isDirectory()) {
-                copy_dir(path, dest+"/"+file);
+                copyDir(path, dest+"/"+file);
             }else {
                 fs.copyFileSync(path,dest+"/"+file)
             }
