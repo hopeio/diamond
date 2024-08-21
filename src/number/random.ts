@@ -1,10 +1,10 @@
 //生成从minNum到maxNum的随机数
-export function randomNum(min?:number,max?:number):number{
+export function randomNum(min:number,max:number):number{
     switch(arguments.length){
         case 1:
-            return  Math.floor(Math.random()*min!+1);
+            return  Math.floor(Math.random()*min+1);
         case 2:
-            return Math.floor(Math.random()*(max!-min!+1)+min!);
+            return Math.floor(Math.random()*(max-min+1)+min);
         default:
             return 0;
     }
