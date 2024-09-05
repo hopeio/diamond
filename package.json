@@ -5,15 +5,15 @@
   "main": "index.js",
   "type": "module",
   "node": ">v20.1.0",
-  "packageManager": "pnpm@9.1.0",
+  "packageManager": "pnpm@9.9.0",
   "exports": {
     ".": {
-      "import": "./esm/index.mjs",
+      "import": "./es/index.mjs",
       "require": "./cjs/index.cjs"
     },
     "./*": {
-      "import": "./es/*",
-      "require": "./cjs/*"
+      "import": "./es/*/index.mjs",
+      "require": "./cjs/*/index.cjs"
     }
   },
   "scripts": {
@@ -46,9 +46,13 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
     "fast-glob": "^3.3.2",
+    "jsdom": "^25.0.0",
     "rollup": "^4.9.5",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3",
     "vitest": "^0.34.6"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.13"
   }
 }

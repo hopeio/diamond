@@ -70,7 +70,7 @@ export default [{
         //preserverModules:true
     }],
     plugins: plugins('esm'),
-    external: ['**/node_modules/**']
+    external: id => /node_modules/.test(id)
 },
     {
         input: Namedinput,
@@ -86,7 +86,7 @@ export default [{
             //preserverModules:true
         }],
         plugins: plugins('cjs'),
-        external: ['**/node_modules/**']
+        external: id => /node_modules/.test(id)
     },
     {
         input: "src/index.ts",
