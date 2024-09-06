@@ -2,8 +2,10 @@
   "name": "diamond",
   "version": "1.0.0",
   "description": "javascript utils",
-  "main": "index.js",
+  "main": "dist/index.js",
   "type": "module",
+  "module": "es/index.ts",
+  "types": "dist/index.d.ts",
   "node": ">v20.1.0",
   "packageManager": "pnpm@9.9.0",
   "exports": {
