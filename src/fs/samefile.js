@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
 
-async function calculateFileHash(filePath) {
+export async function calculateFileHash(filePath) {
     try {
         // 读取文件内容
         const fileContent = await fs.promises.readFile(filePath);
