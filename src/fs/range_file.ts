@@ -1,8 +1,8 @@
-import fs from "fs";
+import fs, {Dirent} from "fs";
 
 export function range(dir:string,callback:Function) {
     fs.readdirSync(dir,{withFileTypes:true}).forEach(
-        file => {
+        (file:Dirent) => {
             const path = dir+"/"+file.name;
             if (file.isDirectory()) {
                 range(path,callback)
@@ -18,7 +18,7 @@ export function sync(src:string,dst:string,callback:Function) {
         fs.mkdirSync(dst)
     }
     fs.readdirSync(src,{withFileTypes:true}).forEach(
-        file => {
+        (file:Dirent) => {
             const path = src+"/"+file.name;
             if (file.isDirectory()) {
                 const dstpath = dst+"/"+file.name;

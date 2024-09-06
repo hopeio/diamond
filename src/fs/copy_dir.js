@@ -1,7 +1,7 @@
 
 import  fs from 'fs'
 
-function copyDir(src, dest) {
+export function copyDir(src, dest) {
     if (!fs.existsSync(dest)){
         fs.mkdirSync(dest)
     }
