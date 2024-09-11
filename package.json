@@ -47,6 +47,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^22.5.4",
     "fast-glob": "^3.3.2",
     "jsdom": "^25.0.0",
@@ -56,6 +57,7 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13"
   }
 }
