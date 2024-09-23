@@ -1,7 +1,8 @@
 export enum Channel {
     APIUser = 'api-user',
     WoHome = 'wohome',
-    WoCloud = 'wocloud'
+    WoCloud = 'wocloud',
+    Wostore = 'wostore'
 }
 export enum SpaceType {
     Personal = "0",
@@ -21,3 +22,16 @@ export enum SortType {
     TimeDesc,
 }
 
+export const JsonClientID = {
+    "clientId": DefaultClientID,
+}
+
+export const JsonClientIDSecret ={
+    "clientId": DefaultClientID,
+    "secret":   true,
+}
+export const JsonSecret = {
+    "secret": true,
+}
+
+export const ErrInvalidPsToken = new Error("invalid psToken")

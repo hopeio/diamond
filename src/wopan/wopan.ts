@@ -1,6 +1,5 @@
 import CryptoJS from 'crypto-js';
 import {Channel, DefaultClientSecret} from "./const";
-import {AppRefreshToken} from "./api-user";
 
 class Client {
     private static instance: Client
@@ -15,7 +14,7 @@ class Client {
         return Client.instance
     }
 
-    private _fetch: Fetch<any> = async function<T> (url:string, method: string, headers: Record<string, string>, body: any):Promise<HttpResponse<T>> {
+    private _fetch: Fetch<any> = async function<T> (url:string, method: string, headers: Record<string, string>, body: any):Promise<HttpResponse<Resp<T>>> {
         const res = await fetch(url,{
             headers: headers,
             body: JSON.stringify(body),
@@ -35,6 +34,10 @@ class Client {
     accessKey: string = ''
     refreshToken: string = ''
     psToken: string = ''
+    _proxy:string = ''
+    set proxy(value: string) {
+        this._proxy = value
+    }
     private iv: string = 'wNSOYIB1k1DjY5lA'
 
     setToken(accessToken: string, refreshToken: string) {
@@ -45,25 +48,39 @@ class Client {
 
     private DefaultBaseURL  = "https://panservice.mail.wo.cn"
     private DefaultZoneURL  = "https://tjupload.pan.wo.cn"
-    private DefaultPreviewURL = "https://tjtn.pan.wo.cn/compressed/preview?fid="
     private DefaultPartSize = 8 * 1024 * 1024
     async request<T>(
         channel: Channel,
         key: string,
         param: Record<string, any>,
         other: Record<string, any>,
+        api = "dispatcher"
     ):Promise<T> {
         const headers: Record<string, string> = {
+            "Content-Type":"application/json",
             "Origin": "https://pan.wo.cn",
             "Referer": "https://pan.wo.cn/",
         }
+
         if (this.accessToken !== '') {
             headers.Accesstoken = this.accessToken
         }
-        const header = calHeader(channel, key)
-        const body= this.newBody(channel, param, other)
-        const url = `${this.DefaultBaseURL}/${channel}/dispatcher`
-        const {status, data} = await this._fetch(url, "POST", headers, {header, body})
+
+        let body= this.newBody(channel, param, other)
+        if (key!==""){
+            const header = calHeader(channel, key)
+            body =  {header, body}
+        }
+        let uri = Channel.WoHome
+        if (channel != Channel.WoHome){
+            uri = Channel.APIUser
+        }
+        let url = `${this.DefaultBaseURL}/${uri}/${api}`
+        if (this._proxy!=''){
+            headers["Target-Host"] = this.DefaultBaseURL
+            url = `${this._proxy}/${uri}/${api}`
+        }
+        const {status, data} = await this._fetch(url, "POST", headers, body)
         if(status > 399) {
             throw new Error(`${status} ${data}`)
         }
@@ -71,9 +88,7 @@ class Client {
              throw new Error(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
         }
         if (data.RSP.RSP_CODE != "0000") {
-            if (channel != Channel.APIUser  && data.RSP.RSP_CODE == "9999") {
-                throw new Error(`9999`)
-            }
+            // 1001 未登录
             throw new Error(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
         }
 
@@ -89,6 +104,14 @@ class Client {
     ): Promise<T>{
         return this.request(Channel.APIUser, key, param, other)
     }
+
+    requestWoStore<T>(key: string,
+                      param: Record<string, any>,
+                      other: Record<string, any>
+    ): Promise<T>{
+        return this.request(Channel.Wostore, key, param, other)
+    }
+
     requestWoHome<T>(key: string,
                       param: Record<string, any>,
                       other: Record<string, any>,
@@ -99,7 +122,7 @@ class Client {
     encrypt(data: string, channel: string): string {
         try {
             let key = this.accessKey;
-            if (channel == Channel.APIUser) {
+            if (channel != Channel.WoHome) {
                 key = DefaultClientSecret
             }
             const encrypted = CryptoJS.AES.encrypt(data, CryptoJS.enc.Utf8.parse(key), {
@@ -115,10 +138,10 @@ class Client {
         }
     }
 
-    decrypt(data: string, channel: string): string {
+    decrypt(data: string, channel = Channel.WoHome): string {
         try {
             let key = this.accessKey;
-            if (channel == Channel.APIUser) {
+            if (channel != Channel.WoHome) {
                 key = DefaultClientSecret
             }
             const decrypted = CryptoJS.AES.decrypt(data, CryptoJS.enc.Utf8.parse(key), {
@@ -140,9 +163,34 @@ class Client {
         }
     }
 
-    private async RefreshToken() {
-    const resp = await AppRefreshToken()
-    this.setToken(resp.access_token, resp.refresh_token)
+
+    async request2<T>( channel: Channel,
+              param: Record<string, any>,
+              other: Record<string, any>,
+              api:string
+    ):Promise<T>{
+        const headers: Record<string, string> = {
+            "Content-Type":"application/json",
+            "Origin": "https://pan.wo.cn",
+            "Referer": "https://pan.wo.cn/",
+        }
+        let url = `${this.DefaultBaseURL}/${channel}/${api}`
+        if (this._proxy!==''){
+            headers["Target-Host"] = this.DefaultBaseURL
+            url = `${this._proxy}/${channel}/${api}`
+        }
+        const {status, data} = await this._fetch(url, "POST", headers , {...param,...other})
+        if(status > 399) {
+            throw new Error(`${status} ${data}`)
+        }
+        if (data.STATUS != "200") {
+            throw new Error(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
+        }
+        if (data.RSP.RSP_CODE != "0000") {
+            // 1001 未登录
+            throw new Error(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
+        }
+        return data.RSP.DATA
     }
 }
 
@@ -171,13 +219,10 @@ function calHeader(channel: string, key: string): Header {
     };
 }
 
-interface HttpResponse<T> {
-    status: number;
-    data: Resp<T>;
-    headers: Headers;
-}
+export const client = Client.getInstance()
 
-type Fetch<T> = (url: string,method: string,headers: Record<string, string>, body: any)=>Promise<HttpResponse<T>>
+
+
 
 interface RspData<T> {
     RSP_CODE: string;
@@ -191,5 +236,3 @@ interface Resp<T> {
     LOGID: string;
     RSP: RspData<T>;
 }
-
-export const client = Client.getInstance()
