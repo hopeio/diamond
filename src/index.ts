@@ -5,3 +5,4 @@ export * from './concolor';
 export * from './time';
 export * from './fs';
 export * from './validator';
+export * from './wopan';

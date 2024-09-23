@@ -1,18 +1,18 @@
 import {client} from './wopan';
-import {DefaultClientSecret} from "./const";
-import {JsonClientIDSecret} from "./var";
+import {Channel, DefaultClientSecret, JsonClientID, JsonClientIDSecret} from "./const";
+
 export interface PcWebLoginData {
     needSmsCode:string
 }
 
-export async function PcWebLogin(phone:string, password:string): Promise<PcWebLoginData>{
-   return  client.requestApiUser("PcLoginVerifyCode",{
+export function PcWebLogin(phone:string, password:string): Promise<PcWebLoginData>{
+   return  client.requestApiUser("PcWebLogin",{
         "phone":        phone,
         "password":     password,
         "uuid":         "",
         "verifyCode":   "",
         "clientSecret": DefaultClientSecret,
-    },JsonClientIDSecret,false)
+    },JsonClientIDSecret)
 }
 export interface PcLoginVerifyCodeData  {
     access_token : string
@@ -21,14 +21,14 @@ export interface PcLoginVerifyCodeData  {
 }
 
 export async function PcLoginVerifyCode(phone:string, password:string,messageCode:string): Promise<PcLoginVerifyCodeData>{
-    const res:PcLoginVerifyCodeData = await  client.requestApiUser("AppQueryUser",{
+    const res:PcLoginVerifyCodeData = await  client.requestApiUser("PcLoginVerifyCode",{
         "phone":        phone,
         "messageCode":  messageCode,
         "verifyCode":   null,
         "uuid":         null,
         "clientSecret": DefaultClientSecret,
         "password":     password,
-    },JsonClientIDSecret,false)
+    },JsonClientIDSecret)
     client.setToken(res.access_token, res.refresh_token)
     return res
 }
@@ -36,8 +36,8 @@ export async function PcLoginVerifyCode(phone:string, password:string,messageCod
 
 export interface AppQueryUserData  {
     userId:        string
-    headUrl     :  string
-    userName    :  string
+    headUrl:        string
+    userName:       string
     sex:           string
     birthday:      string
     isModify:      string
@@ -46,10 +46,16 @@ export interface AppQueryUserData  {
     registerTime:  string
 }
 
-export async function AppQueryUser(): Promise<AppQueryUserData>{
-    return  client.requestApiUser("PcWebLogin",{
+export function AppQueryUser(): Promise<AppQueryUserData>{
+    return  client.requestApiUser("AppQueryUser",{
         "accessToken": client.accessToken
-    },JsonClientIDSecret,false)
+    },JsonClientIDSecret)
+}
+
+export function AppQueryUser2(): Promise<AppQueryUserData>{
+    return  client.requestWoStore("AppQueryUserV2",{
+        "psToken": client.psToken,
+    },JsonClientIDSecret)
 }
 
 export interface AppRefreshTokenData {
@@ -61,8 +67,36 @@ export interface AppRefreshTokenData {
 }
 
 export async function AppRefreshToken(): Promise<AppRefreshTokenData>{
-    return  client.requestApiUser("AppRefreshToken",{
+    const res:AppRefreshTokenData = await client.requestApiUser("AppRefreshToken",{
         "refreshToken": client.refreshToken,
         "clientSecret": DefaultClientSecret,
-    },JsonClientIDSecret,false)
+    },JsonClientIDSecret)
+    client.setToken(res.access_token, res.refresh_token)
+    return res
+}
+
+export function sendMessageCodeBase(phone:string): Promise<void>{
+    return client.request(Channel.APIUser, '',{
+        "operateType":"1",
+        "phone":phone
+    },{...JsonClientID,func: "app_send"},"sendMessageCodeBase")
+}
+
+export interface AppLoginByMobileData {
+    access_token:  string
+    isSetIdInfo:  string
+    refresh_token: string
+    expires_in: number
+    is_new_register: string
+}
+
+
+export async function AppLoginByMobile(phone:string,smsCode:string): Promise<AppLoginByMobileData>{
+    const res:AppLoginByMobileData = await  client.requestWoStore("AppLoginByMobile",{
+        "phone":        phone,
+        "smsCode":  smsCode,
+        "clientSecret": DefaultClientSecret,
+    },JsonClientID)
+    client.setToken(res.access_token, res.refresh_token)
+    return res
 }
