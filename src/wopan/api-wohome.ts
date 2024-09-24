@@ -1,5 +1,13 @@
 import {client} from "./wopan";
-import {Channel, DefaultClientID, SpaceType, ErrInvalidPsToken, JsonClientIDSecret, SortType} from "./const";
+import {
+    Channel,
+    DefaultClientID,
+    SpaceType,
+    ErrInvalidPsToken,
+    JsonClientIDSecret,
+    SortType,
+    JsonSecret
+} from "./const";
 
 export interface File {
     familyId: number;
@@ -11,6 +19,7 @@ export interface File {
     shootingTime: string;
     id: string;
     type: number;
+    previewUrl:string
     thumbUrl: string;
     fileType: string;
 }
@@ -26,6 +35,7 @@ export function QueryAllFiles(spaceType: SpaceType, parentDirectoryId: string, p
         "pageNum": pageNum,
         "pageSize": pageSize,
         "sortRule": sortRule,
+        "clientId": DefaultClientID,
     }
     if (spaceType == SpaceType.Family) {
         param.familyId = familyId
@@ -36,7 +46,7 @@ export function QueryAllFiles(spaceType: SpaceType, parentDirectoryId: string, p
         }
         param.psToken = client.psToken
     }
-    return client.requestWoHome("QueryAllFiles", param, JsonClientIDSecret)
+    return client.requestWoHome("QueryAllFiles", param, JsonSecret)
 }
 
 export interface PrivateSpaceLoginData {
@@ -48,7 +58,8 @@ export interface PrivateSpaceLoginData {
 export async function PrivateSpaceLogin(pwd: string): Promise<PrivateSpaceLoginData> {
     const res: PrivateSpaceLoginData = await client.requestWoHome("PrivateSpaceLogin", {
         "pwd": pwd,
-    }, JsonClientIDSecret)
+        "clientId": DefaultClientID,
+    }, JsonSecret)
     client.psToken = res.psToken
     return res
 }
@@ -67,14 +78,14 @@ export function GetDownloadUrlV2(fidList: string[]): Promise<GetDownloadUrlV2Dat
     return  client.requestWoHome("GetDownloadUrlV2", {
         "type":     "1",
         "fidList":  fidList,
-    }, JsonClientIDSecret)
+    }, JsonSecret)
 }
 // 下载集合压缩包
 export function GetDownloadUrl(spaceType:string,fidList: string[]): Promise<DownloadUrl> {
     return  client.requestWoHome("GetDownloadUrl", {
         "fidList":   fidList,
         "spaceType": spaceType,
-    }, JsonClientIDSecret)
+    }, JsonSecret)
 }
 
 export function MoveFile(dirList:string[], fileList:string[],targetDirId: string,sourceType:string,targetType:string,fromFamilyId:string,targetFamilyId:string): Promise<void> {
@@ -92,7 +103,7 @@ export function MoveFile(dirList:string[], fileList:string[],targetDirId: string
     if (targetType == SpaceType.Family) {
         param.familyId = targetFamilyId
     }
-    return  client.requestWoHome("MoveFile",param, JsonClientIDSecret)
+    return  client.requestWoHome("MoveFile",param, JsonSecret)
 }
 
 export function CopyFile(dirList:string[], fileList:string[],targetDirId: string,sourceType:string,targetType:string,fromFamilyId:string,targetFamilyId:string): Promise<void> {
@@ -111,7 +122,7 @@ export function CopyFile(dirList:string[], fileList:string[],targetDirId: string
     if (targetType == SpaceType.Family) {
         param.familyId = targetFamilyId
     }
-    return  client.requestWoHome("CopyFile",param, JsonClientIDSecret)
+    return  client.requestWoHome("CopyFile",param, JsonSecret)
 }
 
 export function DeleteFile(spaceType:string,dirList:string[], fileList:string[]): Promise<void> {
@@ -120,11 +131,11 @@ export function DeleteFile(spaceType:string,dirList:string[], fileList:string[])
         "vipLevel":  "0",
         "dirList":   dirList,
         "fileList":  fileList,
-       }, JsonClientIDSecret)
+       }, JsonSecret)
 }
 
 export function EmptyRecycleData(spaceType:string,dirList:string[], fileList:string[]): Promise<void> {
-    return  client.requestWoHome("EmptyRecycleData",{}, JsonClientIDSecret)
+    return  client.requestWoHome("EmptyRecycleData",{}, JsonSecret)
 }
 
 interface VerifySetPwd {
@@ -134,10 +145,10 @@ interface VerifySetPwd {
 export function VerifySetPwd(): Promise<VerifySetPwd> {
     return  client.requestWoHome("VerifySetPwd",{
         "psToken": client.psToken,
-        }, JsonClientIDSecret)
+        }, JsonSecret)
 }
 
 export function FCloudProductOrdListQry(): Promise<void> {
     return  client.request(Channel.Wostore, "FCloudProductOrdListQry",{
-     }, {...JsonClientIDSecret, qryType: "1",})
+     }, {...JsonSecret, qryType: "1",})
 }
