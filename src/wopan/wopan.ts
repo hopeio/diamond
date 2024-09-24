@@ -27,8 +27,13 @@ class Client {
         }
     }
 
+    private _failCallback: ((error: any) => void) | undefined
+
     set fetch(value: Fetch<any>) {
         this._fetch = value
+    }
+    set failCallback(value: (error: any) => void) {
+        this._failCallback = value
     }
     accessToken: string = ''
     accessKey: string = ''
@@ -77,19 +82,27 @@ class Client {
         }
         let url = `${this.DefaultBaseURL}/${uri}/${api}`
         if (this._proxy!=''){
-            headers["Target-Host"] = this.DefaultBaseURL
+            headers["Target-Url"] = this.DefaultBaseURL
+            headers["Target-Origin"] = "https://pan.wo.cn"
+            headers["Target-Referer"] = "https://pan.wo.cn/"
             url = `${this._proxy}/${uri}/${api}`
         }
         const {status, data} = await this._fetch(url, "POST", headers, body)
         if(status > 399) {
-            throw new Error(`${status} ${data}`)
+            if(this._failCallback){
+                this._failCallback(`request failed: ${status}, data: ${data}`)
+            }else throw new Error(`request failed: ${status}, data: ${data}`)
         }
         if (data.STATUS != "200") {
-             throw new Error(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
+            if(this._failCallback){
+                this._failCallback(data)
+            }else throw new Error(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
         }
         if (data.RSP.RSP_CODE != "0000") {
             // 1001 未登录
-            throw new Error(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
+            if(this._failCallback){
+                this._failCallback(data)
+            }else throw new Error(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
         }
 
         if (typeof data.RSP.DATA === "string"){
@@ -161,36 +174,6 @@ class Client {
             ...other,
             "param": param?this.encrypt(JSON.stringify(param), channel):'',
         }
-    }
-
-
-    async request2<T>( channel: Channel,
-              param: Record<string, any>,
-              other: Record<string, any>,
-              api:string
-    ):Promise<T>{
-        const headers: Record<string, string> = {
-            "Content-Type":"application/json",
-            "Origin": "https://pan.wo.cn",
-            "Referer": "https://pan.wo.cn/",
-        }
-        let url = `${this.DefaultBaseURL}/${channel}/${api}`
-        if (this._proxy!==''){
-            headers["Target-Host"] = this.DefaultBaseURL
-            url = `${this._proxy}/${channel}/${api}`
-        }
-        const {status, data} = await this._fetch(url, "POST", headers , {...param,...other})
-        if(status > 399) {
-            throw new Error(`${status} ${data}`)
-        }
-        if (data.STATUS != "200") {
-            throw new Error(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
-        }
-        if (data.RSP.RSP_CODE != "0000") {
-            // 1001 未登录
-            throw new Error(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
-        }
-        return data.RSP.DATA
     }
 }
 
