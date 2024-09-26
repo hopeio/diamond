@@ -95,18 +95,20 @@ class Client {
         }
         if (data.STATUS != "200") {
             if(this._failCallback){
-                this._failCallback(data)
+                this._failCallback(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
             }else throw new Error(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
         }
         if (data.RSP.RSP_CODE != "0000") {
             // 1001 未登录
             if(this._failCallback){
-                this._failCallback(data)
+                this._failCallback(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
             }else throw new Error(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
         }
 
         if (typeof data.RSP.DATA === "string"){
-            return JSON.parse(this.decrypt(data.RSP.DATA, channel))
+            if (data.RSP.DATA !== ""){
+                return JSON.parse(this.decrypt(data.RSP.DATA, channel))
+            }
         }
          return data.RSP.DATA
     }
