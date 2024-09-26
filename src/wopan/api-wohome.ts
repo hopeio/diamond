@@ -78,6 +78,7 @@ export function GetDownloadUrlV2(fidList: string[]): Promise<GetDownloadUrlV2Dat
     return  client.requestWoHome("GetDownloadUrlV2", {
         "type":     "1",
         "fidList":  fidList,
+        "clientId":  DefaultClientID,
     }, JsonSecret)
 }
 // 下载集合压缩包
@@ -85,6 +86,7 @@ export function GetDownloadUrl(spaceType:string,fidList: string[]): Promise<Down
     return  client.requestWoHome("GetDownloadUrl", {
         "fidList":   fidList,
         "spaceType": spaceType,
+        "clientId":  DefaultClientID,
     }, JsonSecret)
 }
 
@@ -96,6 +98,7 @@ export function MoveFile(dirList:string[], fileList:string[],targetDirId: string
         "dirList":     dirList,
         "fileList":    fileList,
         "secret":      false,
+        "clientId":  DefaultClientID,
     }
     if (sourceType == SpaceType.Family) {
         param.fromFamilyId = fromFamilyId
@@ -114,7 +117,7 @@ export function CopyFile(dirList:string[], fileList:string[],targetDirId: string
         "dirList":     dirList,
         "fileList":    fileList,
         "secret":      false,
-
+        "clientId":  DefaultClientID,
     }
     if (sourceType == SpaceType.Family) {
         param.fromFamilyId = fromFamilyId
@@ -131,11 +134,12 @@ export function DeleteFile(spaceType:string,dirList:string[], fileList:string[])
         "vipLevel":  "0",
         "dirList":   dirList,
         "fileList":  fileList,
+        "clientId":  DefaultClientID,
        }, JsonSecret)
 }
 
 export function EmptyRecycleData(spaceType:string,dirList:string[], fileList:string[]): Promise<void> {
-    return  client.requestWoHome("EmptyRecycleData",{}, JsonSecret)
+    return  client.requestWoHome("EmptyRecycleData",{"clientId":  DefaultClientID,}, JsonSecret)
 }
 
 interface VerifySetPwd {
