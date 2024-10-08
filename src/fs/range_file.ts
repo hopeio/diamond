@@ -1,6 +1,6 @@
 import fs, {Dirent} from "fs";
-
-export function range(dir:string,callback:Function) {
+type RangeCallback = (dir:string,name:string,path:string) => void;
+export function range(dir:string,callback:RangeCallback) {
     fs.readdirSync(dir,{withFileTypes:true}).forEach(
         (file:Dirent) => {
             const path = dir+"/"+file.name;
@@ -12,8 +12,9 @@ export function range(dir:string,callback:Function) {
         }
     )
 }
+type SyncCallback = (name:string,path:string,dst:string) => void;
 
-export function sync(src:string,dst:string,callback:Function) {
+export function sync(src:string,dst:string,callback:SyncCallback) {
     if (!fs.existsSync(dst)){
         fs.mkdirSync(dst)
     }
