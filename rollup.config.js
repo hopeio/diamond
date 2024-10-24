@@ -8,6 +8,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url';
 import terser from "@rollup/plugin-terser";
 import alias from "@rollup/plugin-alias";
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 const __filename = fileURLToPath(import.meta.url);
 const packageJson = JSON.parse(readFileSync("./package.json", "utf8")); // 读取UMD全局模块名，在package中定义了
@@ -32,6 +33,7 @@ const Namedinput = Object.fromEntries(
 
 
 const plugin = [
+    nodePolyfills(),
     resolve(),
     commonjs({
         include: /node_modules/
