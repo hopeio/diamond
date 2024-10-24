@@ -58,12 +58,12 @@ function plugins(mode) {
 
 export default [{
     input: Namedinput,
-    output: [{
+    output: [/*{
         dir: "es",
         format: "esm",
         entryFileNames: '[name].mjs'
         //preserverModules:true
-    },
+    },*/
     {
         dir: "es",
         format: "esm",
@@ -74,12 +74,12 @@ export default [{
 },
     {
         input: Namedinput,
-        output: [{
+        output: [/*{
             dir: "cjs",
             format: "cjs",
             entryFileNames: '[name].cjs'
             //preserverModules:true
-        },
+        },*/
         {
             dir: "cjs",
             format: "cjs",
@@ -90,6 +90,7 @@ export default [{
     },
     {
         input: "src/index.ts",
+        context:'window',
         output: [{
             file: "dist/umd.js",
             format: "umd",
@@ -99,6 +100,8 @@ export default [{
                 "event-message-center": "MessageCenter",
                 "task-queue-lib": "TaskQueue",
             },
+            //sourcemap: true, // 生成 source map（可选）
+            //sourcemap: true, // 生成 source map（可选）
         },
         {
             file: "dist/amd.js",
@@ -109,7 +112,9 @@ export default [{
             format: "iife",
             name: pkgName,
         }],
-        plugins: [...plugins(),terser()],
-        external: ['**/node_modules/**']
+        plugins: [resolve({browser:true}),typescript({
+            tsconfig: "./tsconfig.json"
+        }) ,terser()],
+        external: []
     }
 ];

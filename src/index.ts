@@ -6,3 +6,4 @@ export * from './time';
 export * from './fs';
 export * from './validator';
 export * from './wopan';
+export * from './image';

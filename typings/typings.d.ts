@@ -11,3 +11,10 @@ interface HttpResponse<T> {
     headers: Headers;
 }
 
+
+interface Point  {
+    x: number
+    y: number
+}
+
+type Point2D = [number, number];

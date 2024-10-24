@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from "dayjs/esm";
 
 Date.prototype.format = function (fmt:string) {
   return dayjs(this).format(fmt);

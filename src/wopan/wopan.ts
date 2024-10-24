@@ -1,5 +1,6 @@
-import CryptoJS from 'crypto-js';
+import crypto from 'crypto';
 import {Channel, DefaultClientSecret} from "./const";
+import {AES128CBCDecrypt, AES128CBCEncrypt} from "../crypto";
 
 class Client {
     private static instance: Client
@@ -140,13 +141,7 @@ class Client {
             if (channel != Channel.WoHome) {
                 key = DefaultClientSecret
             }
-            const encrypted = CryptoJS.AES.encrypt(data, CryptoJS.enc.Utf8.parse(key), {
-                iv: CryptoJS.enc.Utf8.parse(this.iv),
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            });
-
-            return encrypted.toString()
+            return AES128CBCEncrypt(data,key,this.iv).toString()
         } catch (error) {
             console.log(error);
             throw error;
@@ -159,12 +154,7 @@ class Client {
             if (channel != Channel.WoHome) {
                 key = DefaultClientSecret
             }
-            const decrypted = CryptoJS.AES.decrypt(data, CryptoJS.enc.Utf8.parse(key), {
-                iv: CryptoJS.enc.Utf8.parse(this.iv),
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            });
-            return decrypted.toString(CryptoJS.enc.Utf8);
+            return AES128CBCDecrypt(data,key,this.iv).toString();
         } catch (error) {
             console.log(error);
             throw error;
@@ -193,7 +183,9 @@ function calHeader(channel: string, key: string): Header {
     const resTime = Date.now();
     const reqSeq = Math.floor(Math.random() * 8999) + 1e5;
     const version = "";
-    const sign = CryptoJS.MD5(`${key}${resTime}${reqSeq}${channel}${version}`).toString(CryptoJS.enc.Hex);
+    const md5Hash = crypto.createHash('md5')
+    md5Hash.update(`${key}${resTime}${reqSeq}${channel}${version}`);
+    const sign = md5Hash.digest('hex');
     return {
         key: key,
         resTime: resTime,

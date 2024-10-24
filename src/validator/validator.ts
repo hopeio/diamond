@@ -1,4 +1,4 @@
-const Validator = {
+export const Validator = {
   PhoneReg: new RegExp("^1[0-9]{10}$"),
   phone(input: string): boolean {
     return this.PhoneReg.test(input);
@@ -9,5 +9,3 @@ const Validator = {
     return this.EmailReg.test(input);
   },
 };
-
-export default Validator;
