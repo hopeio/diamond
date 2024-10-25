@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import {Channel, DefaultClientSecret} from "./const";
-import {AES128CBCDecrypt, AES128CBCEncrypt} from "../crypto";
-
+import {decrypt, encrypt} from "../crypto";
+import SparkMD5 from "spark-md5";
 class Client {
     private static instance: Client
 
@@ -72,7 +72,7 @@ class Client {
             headers.Accesstoken = this.accessToken
         }
 
-        let body= this.newBody(channel, param, other)
+        let body= await this.newBody(channel, param, other)
         if (key!==""){
             const header = calHeader(channel, key)
             body =  {header, body}
@@ -108,7 +108,7 @@ class Client {
 
         if (typeof data.RSP.DATA === "string"){
             if (data.RSP.DATA !== ""){
-                return JSON.parse(this.decrypt(data.RSP.DATA, channel))
+                return JSON.parse(await this.decrypt(data.RSP.DATA, channel))
             }
         }
          return data.RSP.DATA
@@ -135,36 +135,36 @@ class Client {
         return this.request(Channel.WoHome, key, param, other)
     }
 
-    encrypt(data: string, channel: string): string {
+    async encrypt(data: string, channel: string): Promise<string> {
         try {
             let key = this.accessKey;
             if (channel != Channel.WoHome) {
                 key = DefaultClientSecret
             }
-            return AES128CBCEncrypt(data,key,this.iv).toString()
+            return encrypt(data,key,this.iv)
         } catch (error) {
             console.log(error);
             throw error;
         }
     }
 
-    decrypt(data: string, channel = Channel.WoHome): string {
+   async decrypt(data: string, channel = Channel.WoHome): Promise<string> {
         try {
             let key = this.accessKey;
             if (channel != Channel.WoHome) {
                 key = DefaultClientSecret
             }
-            return AES128CBCDecrypt(data,key,this.iv).toString();
+            return await decrypt(data,key,this.iv);
         } catch (error) {
             console.log(error);
             throw error;
         }
     }
 
-    private newBody(channel: string, param: any,other:any): any {
+    private async newBody(channel: string, param: any,other:any): Promise<any> {
         return {
             ...other,
-            "param": param?this.encrypt(JSON.stringify(param), channel):'',
+            "param": param?await this.encrypt(JSON.stringify(param), channel):'',
         }
     }
 }
@@ -183,9 +183,7 @@ function calHeader(channel: string, key: string): Header {
     const resTime = Date.now();
     const reqSeq = Math.floor(Math.random() * 8999) + 1e5;
     const version = "";
-    const md5Hash = crypto.createHash('md5')
-    md5Hash.update(`${key}${resTime}${reqSeq}${channel}${version}`);
-    const sign = md5Hash.digest('hex');
+    const sign = SparkMD5.hash(`${key}${resTime}${reqSeq}${channel}${version}`);
     return {
         key: key,
         resTime: resTime,

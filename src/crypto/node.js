@@ -45,3 +45,9 @@ export function AES256CBCEncrypt(dataStr, key, iv) {
     let encrypted = cipher.update(dataStr, 'utf8', 'base64');
     return encrypted + cipher.final('base64');
 }
+
+export function mad5(data){
+    const md5Hash = crypto.createHash('md5')
+    md5Hash.update(data);
+    return  md5Hash.digest('hex');
+}
