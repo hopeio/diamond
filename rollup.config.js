@@ -8,7 +8,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url';
 import terser from "@rollup/plugin-terser";
 import alias from "@rollup/plugin-alias";
-import nodePolyfills from 'rollup-plugin-node-polyfills';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 
 const __filename = fileURLToPath(import.meta.url);
 const packageJson = JSON.parse(readFileSync("./package.json", "utf8")); // 读取UMD全局模块名，在package中定义了
@@ -16,7 +16,7 @@ const pkgName = packageJson.name;
 const __dirname = path.dirname(__filename);
 
 const pathResolve = (p) => path.resolve(__dirname, p);
-const input = glob.sync('src/**/*.(ts|js)', {ignore: [`src/**/*.test.(ts|js)`]});
+const input = glob.sync('src/**/*.(ts|js)', {ignore: [`src/**/*.test.(ts|js)`,`src/**/test.(ts|js)`]});
 const Namedinput = Object.fromEntries(
     input.map((file) => [
         // 这里将删除 `src/` 以及每个文件的扩展名。
@@ -114,9 +114,12 @@ export default [{
             format: "iife",
             name: pkgName,
         }],
-        plugins: [resolve({browser:true}),typescript({
+        plugins: [nodePolyfills(),resolve({browser:true}),typescript({
             tsconfig: "./tsconfig.json"
         }) ,terser()],
-        external: []
+        globals: {
+            'spark-md5': 'SparkMD5' // 告诉Rollup全局变量名
+        },
+        external: ['spark-md5'],
     }
 ];
