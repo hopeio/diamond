@@ -1,4 +1,4 @@
-import dayjs from "dayjs/esm";
+import dayjs from "dayjs";
 
 export const date2s = (value:string) => dayjs(value).format("YYYY-MM-DD HH:mm:ss");
 export const s2date = (value:string) => dayjs(value, "YYYY-MM-DD HH:mm:ss.SSS Z");

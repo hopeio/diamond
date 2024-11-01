@@ -33,7 +33,6 @@ const Namedinput = Object.fromEntries(
 
 
 const plugin = [
-    nodePolyfills(),
     resolve(),
     commonjs({
         include: /node_modules/
@@ -57,6 +56,11 @@ function plugins(mode) {
         tsconfig: config
     })]
 }
+
+const globals = {
+        'spark-md5': 'SparkMD5', // 告诉Rollup全局变量名
+        'dayjs': 'dayjs'
+    }
 
 export default [{
     input: Namedinput,
@@ -97,29 +101,23 @@ export default [{
             file: "dist/umd.js",
             format: "umd",
             name: pkgName,
-            globals: {
-                // 配置依赖中的UMD全局变量名
-                "event-message-center": "MessageCenter",
-                "task-queue-lib": "TaskQueue",
-            },
-            //sourcemap: true, // 生成 source map（可选）
+            globals,
             //sourcemap: true, // 生成 source map（可选）
         },
         {
             file: "dist/amd.js",
             format: "amd",
+            globals,
         },
         {
             file: "dist/iife.js",
             format: "iife",
             name: pkgName,
+            globals,
         }],
         plugins: [nodePolyfills(),resolve({browser:true}),typescript({
             tsconfig: "./tsconfig.json"
         }) ,terser()],
-        globals: {
-            'spark-md5': 'SparkMD5' // 告诉Rollup全局变量名
-        },
-        external: ['spark-md5'],
+        external: ['spark-md5','dayjs'],
     }
 ];
