@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "dayjs": "^1.11.13",
-    "spark-md5": "^3.0.2"
+    "spark-md5": "^3.0.2",
+    "@markusjx/shared_memory": "1.0.1"
   }
 }
