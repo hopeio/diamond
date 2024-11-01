@@ -13,17 +13,18 @@ export function range(dir:string,callback:RangeCallback) {
     )
 }
 type SyncCallback = (name:string,path:string,dst:string) => void;
-
-export function sync(src:string,dst:string,callback:SyncCallback) {
+type Filter = (file:Dirent) => boolean;
+export function sync(src:string,dst:string,callback:SyncCallback,filter?:Filter) {
     if (!fs.existsSync(dst)){
         fs.mkdirSync(dst)
     }
     fs.readdirSync(src,{withFileTypes:true}).forEach(
         (file:Dirent) => {
+            if (filter && !filter(file)) return
             const path = src+"/"+file.name;
             if (file.isDirectory()) {
                 const dstpath = dst+"/"+file.name;
-                sync(path,dstpath,callback)
+                sync(path,dstpath,callback,filter)
             }else {
                 callback(file.name,path,dst)
             }
