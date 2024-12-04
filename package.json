@@ -19,6 +19,7 @@
     }
   },
   "scripts": {
+    "link": "pnpm link --global",
     "rollup:build": "rollup -c rollup.config.js",
     "test": "vitest",
     "build:rustbind": "napi build --release",
