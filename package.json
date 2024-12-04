@@ -7,7 +7,7 @@
   "module": "es/index.ts",
   "types": "dist/index.d.ts",
   "node": ">v20.1.0",
-  "packageManager": "pnpm@9.12.2",
+  "packageManager": "pnpm@9.14.4",
   "exports": {
     ".": {
       "import": "./es/index.js",
