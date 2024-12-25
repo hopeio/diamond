@@ -11,6 +11,16 @@ interface HttpResponse<T> {
     headers: Headers;
 }
 
+type ResData<T> = {
+    code: number
+    msg: string
+    data: T
+}
+
+type ListRep<T> = {
+    list: T[]
+    total?: number
+}
 
 interface Point  {
     x: number
