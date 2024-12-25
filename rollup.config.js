@@ -94,7 +94,7 @@ export default [{
         plugins: plugins('cjs'),
         external: id => /node_modules/.test(id)
     },
-    {
+ /*   {
         input: "src/index.ts",
         context:'window',
         output: [{
@@ -118,6 +118,6 @@ export default [{
         plugins: [nodePolyfills(),resolve({browser:true}),typescript({
             tsconfig: "./tsconfig.json"
         }) ,terser()],
-        external: ['spark-md5','dayjs'],
-    }
+        external: ['spark-md5','dayjs','@dcloudio/uni-app'],
+    }*/
 ];
