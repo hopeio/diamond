@@ -2,19 +2,19 @@
   "name": "diamond",
   "version": "1.0.2",
   "description": "javascript utils",
-  "main": "dist/index.js",
+  "main": "esm/index.js",
   "type": "module",
-  "module": "es/index.ts",
-  "types": "dist/index.d.ts",
+  "module": "esm/index.ts",
+  "types": "esm/index.d.ts",
   "node": ">v20.1.0",
   "packageManager": "pnpm@9.14.4",
   "exports": {
     ".": {
-      "import": "./es/index.js",
+      "import": "./esm/index.js",
       "require": "./cjs/index.js"
     },
     "./*": {
-      "import": "./es/*/index.js",
+      "import": "./esm/*/index.js",
       "require": "./cjs/*/index.js"
     }
   },
@@ -30,7 +30,7 @@
   },
   "files": [
     "dist",
-    "es",
+    "esm",
     "cjs"
   ],
   "repository": {

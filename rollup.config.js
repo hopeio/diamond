@@ -71,7 +71,7 @@ export default [{
         //preserverModules:true
     },*/
     {
-        dir: "es",
+        dir: "esm",
         format: "esm",
         //preserverModules:true
     }],

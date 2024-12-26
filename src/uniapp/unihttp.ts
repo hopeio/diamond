@@ -1,5 +1,5 @@
 
-import { toUrlParams } from '@'
+import { toUrlParams } from '../compatible/url'
 
 type IUniUploadFileOptions = {
     file?: File

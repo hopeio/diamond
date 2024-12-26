@@ -1,4 +1,4 @@
-import { toUrlParams } from '@'
+import { toUrlParams } from '../compatible/url'
 
 
 /* eslint-disable no-param-reassign */
