@@ -4,11 +4,11 @@ const CommonCmd = ` -i "%s" -y `
 
 let execPath = "ffmpeg"
 
-function setExecPath(path:string) {
+export function setExecPath(path:string) {
     execPath = path
 }
 
-function ffmpegCmd(cmd:string)  {
+export function ffmpegCmd(cmd:string)  {
     cmd = execPath + cmd
     console.log(cmd)
     childProcess.execSync(cmd,{

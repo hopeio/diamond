@@ -2,25 +2,29 @@
   "name": "diamond",
   "version": "1.0.2",
   "description": "javascript utils",
-  "main": "esm/index.js",
+  "main": "dist/index.js",
   "type": "module",
-  "module": "esm/index.ts",
-  "types": "esm/index.d.ts",
+  "module": "dist/index.ts",
+  "types": "dist/index.d.ts",
   "node": ">v20.1.0",
   "packageManager": "pnpm@9.14.4",
   "exports": {
     ".": {
-      "import": "./esm/index.js",
-      "require": "./cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js"
     },
     "./*": {
-      "import": "./esm/*/index.js",
-      "require": "./cjs/*/index.js"
+      "types": "./dist/*/index.d.ts",
+      "import": "./dist/*.es.js",
+      "require": "./dist/*.cjs.js"
     }
   },
   "scripts": {
+    "upgrade": "pnpm update --latest",
     "link": "pnpm link --global",
     "rollup:build": "rollup -c rollup.config.js",
+    "vite:build": "vite build",
     "test": "vitest",
     "build:rustbind": "napi build --release",
     "build:rustbind:debug": "napi build"
@@ -48,27 +52,40 @@
   "homepage": "https://github.com/hopeio/diamond#readme",
   "devDependencies": {
     "@dcloudio/types": "^3.4.14",
-    "@napi-rs/cli": "3.0.0-alpha.64",
-    "@rollup/plugin-alias": "^5.1.0",
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^11.1.6",
-    "@types/crypto-js": "^4.2.2",
-    "@types/node": "^22.5.4",
-    "fast-glob": "^3.3.2",
-    "jsdom": "^25.0.0",
-    "rollup": "4.22.4",
-    "rollup-plugin-polyfill-node": "^0.13.0",
-    "tslib": "^2.6.2",
-    "typescript": "^5.3.3",
-    "vitest": "^0.34.6"
-  },
-  "dependencies": {
-    "@dcloudio/uni-app": "2.0.2-4020420240722004",
+    "@dcloudio/uni-app": "3.0.0-4030620241128001",
     "@markusjx/shared_memory": "1.0.1",
+    "@napi-rs/cli": "3.0.0-alpha.64",
+    "@types/node": "^22.5.4",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue-jsx": "^4.1.1",
+    "@vue/tsconfig": "^0.7.0",
     "dayjs": "^1.11.13",
-    "spark-md5": "^3.0.2"
+    "jsdom": "^25.0.0",
+    "spark-md5": "^3.0.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.6",
+    "vite-plugin-dts": "^4.4.0",
+    "vite-plugin-node-polyfills": "^0.22.0",
+    "vitest": "^2.1.8",
+    "vue": "^3.5.13",
+    "vue-tsc": "^2.2.0"
+  },
+  "pnpm": {
+    "packageExtensions": {
+      "vite-plugin-dts": {
+        "dependenciesMeta": {
+          "@volar/typescript": {
+            "optional": true
+          },
+          "vue-tsc": {
+            "optional": true
+          },
+          "@vue/language-core": {
+            "optional": true
+          }
+        }
+      }
+    }
   }
 }
