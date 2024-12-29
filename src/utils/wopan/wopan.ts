@@ -1,6 +1,5 @@
-import crypto from 'crypto';
 import {Channel, DefaultClientSecret} from "./const";
-import {decrypt, encrypt} from "../crypto/compatible";
+import {decrypt, encrypt} from "../crypto";
 import SparkMD5 from "spark-md5";
 class Client {
     private static instance: Client

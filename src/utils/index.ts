@@ -7,3 +7,4 @@ export * from './fs';
 export * from './validator';
 export * from './wopan';
 export * from './image';
+export * from './uniapp';
