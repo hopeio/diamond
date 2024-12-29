@@ -1,8 +1,10 @@
 import dayjs from "dayjs";
 
-export const date2s = (value:string) => dayjs(value).format("YYYY-MM-DD HH:mm:ss");
-export const s2date = (value:string) => dayjs(value, "YYYY-MM-DD HH:mm:ss.SSS Z");
-export const datefmt = (value:string, format:string) => dayjs(value).format(format);
+
+export const toDate = (value:string) => dayjs(value, "YYYY-MM-DD HH:mm:ss.SSSZ");
+export const dateFmt = (value:string, format:string) => dayjs(value).format(format);
+export const dateFmtDate = (value:Date) => dayjs(value).format("YYYY-MM-DD");
+export const dateFmtDateTime = (value:Date) => dayjs(value).format("YYYY-MM-DD HH:mm:ss");
 
 export function timestamp(dateString:string) {
     return new Date(dateString).getTime()
