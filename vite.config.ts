@@ -57,7 +57,22 @@ export default defineConfig({
         vue(),
         dts({
             outDir: "dist",
-            tsconfigPath: './tsconfig.utils.json',
+            entryRoot:'src/utils',
+            tsconfigPath: 'tsconfig.utils.json',
+            //rollupTypes: true,
+            copyDtsFiles: true
+        }),
+        dts({
+            outDir: "dist",
+            entryRoot:'src/components',
+            tsconfigPath: 'tsconfig.components.json',
+            //rollupTypes: true,
+            copyDtsFiles: true
+        }),
+        dts({
+            outDir: "dist",
+            entryRoot:'src/types',
+            tsconfigPath: 'tsconfig.types.json',
             //rollupTypes: true,
             copyDtsFiles: true
         }),
@@ -85,7 +100,6 @@ export default defineConfig({
             entry: getEntries('src/utils', 'src/components'),
             name: "diamond",
             formats: ["es", "cjs"],
-            fileName: (format) => `[name].${format}.js`
         },
         //minify: 'terser',
         rollupOptions: {
