@@ -102,7 +102,7 @@ class UniRequest {
                         resolve(res.data as ResData<T>)
                     } else {
                         // 其他错误 -> 根据后端错误信息轻提示
-                        !config.hideErrorToast &&
+                        !config?.hideErrorToast &&
                         uni.showToast({
                             icon: 'none',
                             title: (res.data as ResData<T>).msg || '请求错误',

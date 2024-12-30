@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "emitDeclarationOnly": true,
     // 只输出声明文件(ts 产物)
@@ -8,8 +8,13 @@
     "declarationDir": "dist"
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.js",
-    "src/**/*.d.ts"
+    "src/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "./**/test.ts",
+    "./**/test.js",
+    "./**/*.test.js",
+    "./**/*.test.ts"
   ]
 }

@@ -4,7 +4,6 @@ import {
     DefaultClientID,
     SpaceType,
     ErrInvalidPsToken,
-    JsonClientIDSecret,
     SortType,
     JsonSecret
 } from "./const";
@@ -138,7 +137,7 @@ export function DeleteFile(spaceType:string,dirList:string[], fileList:string[])
        }, JsonSecret)
 }
 
-export function EmptyRecycleData(spaceType:string,dirList:string[], fileList:string[]): Promise<void> {
+export function EmptyRecycleData(): Promise<void> {
     return  client.requestWoHome("EmptyRecycleData",{"clientId":  DefaultClientID,}, JsonSecret)
 }
 
