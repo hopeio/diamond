@@ -6,7 +6,7 @@ import dts from 'vite-plugin-dts'
 import {nodePolyfills} from 'vite-plugin-node-polyfills'
 
 function getEntries(...dirs: string[]) {
-    const entries:Record<string, string> = {};
+    const entries: Record<string, string> = {};
     const index = ["index.ts", "index.js"]
     for (const dir of dirs) {
         const files = fs.readdirSync(dir);
@@ -25,13 +25,30 @@ function getEntries(...dirs: string[]) {
     return entries;
 }
 
+function getExternal(): string[] {
+    const dir = "node_modules"
+    let external: string[] = ["http", "fs", "crypto"]
+    const files = fs.readdirSync(dir)
+    files.forEach(file => {
+        const fullPath = dir + "/" + file;
+        if (fs.statSync(fullPath).isDirectory()) {
+            if (file.startsWith("@")) {
+                external = external.concat(fs.readdirSync(fullPath).map(f => file + '/' + f))
+            } else {
+                external.push(file)
+            }
+        }
+
+    });
+    return external
+}
 
 
 const globals = {
     'spark-md5': 'SparkMD5', // 告诉Rollup全局变量名
     dayjs: 'dayjs',
     vue: 'Vue',
-    'element-plus':"ElementPlus",
+    'element-plus': "ElementPlus",
     '@pure-admin/table': "PureTable"
 }
 
@@ -65,18 +82,14 @@ export default defineConfig({
     build: {
         outDir: "dist",
         lib: {
-            entry: getEntries('src/utils','src/components'),
+            entry: getEntries('src/utils', 'src/components'),
             name: "diamond",
             formats: ["es", "cjs"],
             fileName: (format) => `[name].${format}.js`
         },
-
-        commonjsOptions: {
-            include: [/node_modules/],
-        },
         //minify: 'terser',
         rollupOptions: {
-            external: id => /node_modules/.test(id) || ["http", "fs", "crypto"].includes(id),
+            external: getExternal(),
             output: {
                 dir: 'dist',
                 globals,
