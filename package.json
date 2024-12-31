@@ -60,10 +60,13 @@
     "qs": "^6.13.1",
     "responsive-storage": "^2.2.0",
     "spark-md5": "^3.0.2",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-tippy": "^6.6.0"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.14",
+    "@iconify-icons/ri": "^1.2.10",
+    "@iconify/vue": "^4.2.0",
     "@napi-rs/cli": "3.0.0-alpha.64",
     "@types/node": "^22.5.4",
     "@types/qs": "^6.9.17",

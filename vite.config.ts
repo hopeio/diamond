@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import fs from "fs";
 import path from "node:path";
 import dts from 'vite-plugin-dts'
+import vueJsx from "@vitejs/plugin-vue-jsx";
 import {nodePolyfills} from 'vite-plugin-node-polyfills'
 
 function getEntries(...dirs: string[]) {
@@ -55,6 +56,7 @@ const globals = {
 export default defineConfig({
     plugins: [
         vue(),
+        vueJsx(),
         dts({
             outDir: "dist",
             entryRoot:'src/utils',
