@@ -4,8 +4,7 @@
   "description": "javascript utils",
   "main": "dist/index.js",
   "type": "module",
-  "module": "dist/index.ts",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "node": ">v20.1.0",
   "packageManager": "pnpm@9.14.4",
   "exports": {
@@ -14,6 +13,7 @@
       "import": "./dist/index.es.js",
       "require": "./dist/index.cjs.js"
     },
+    "./diamond.css": "./dist/diamond.css",
     "./*": {
       "types": "./dist/*/index.d.ts",
       "import": "./dist/*.es.js",
@@ -32,9 +32,7 @@
     "name": "jarvis"
   },
   "files": [
-    "dist",
-    "esm",
-    "cjs"
+    "dist"
   ],
   "repository": {
     "type": "git",

@@ -1,4 +1,5 @@
-import { toUrlParams } from '../compatible/url'
+import qs from 'qs'
+import type {ResData} from "@/utils/types";
 
 
 /* eslint-disable no-param-reassign */
@@ -68,7 +69,7 @@ class UniRequest {
         return new Promise<ResData<T>>((resolve, reject) => {
             // 接口请求支持通过 query 参数配置 queryString
             if (config?.query) {
-                const queryStr = toUrlParams(config.query)
+                const queryStr = qs.stringify(config.query)
                 if (url.includes('?')) {
                     url += `&${queryStr}`
                 } else {
