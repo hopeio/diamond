@@ -64,14 +64,14 @@ export default defineConfig({
         }),
         dts({
             outDir: "dist",
-            entryRoot:'src/components',
-            tsconfigPath: 'tsconfig.components.json',
+            entryRoot:'src/vue',
+            tsconfigPath: 'tsconfig.vue.json',
             //rollupTypes: true,
             copyDtsFiles: true
         }),
         dts({
             outDir: "dist",
-            entryRoot:'src/types',
+            entryRoot:'src',
             tsconfigPath: 'tsconfig.types.json',
             //rollupTypes: true,
             copyDtsFiles: true
@@ -97,7 +97,7 @@ export default defineConfig({
     build: {
         outDir: "dist",
         lib: {
-            entry: getEntries('src/utils', 'src/components'),
+            entry: getEntries('src/utils', 'src/vue'),
             name: "diamond",
             formats: ["es", "cjs"],
         },

@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
+    "strict": false,
     "emitDeclarationOnly": true,
     // 只输出声明文件(ts 产物)
     "declaration": true,
@@ -8,7 +9,7 @@
     "declarationDir": "./dist"
   },
   "include": [
-    "src/components/**/*"
+    "src/vue/**/*"
   ],
   "exclude": [
     "./node_modules",
