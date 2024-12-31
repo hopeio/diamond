@@ -69,13 +69,6 @@ export default defineConfig({
             //rollupTypes: true,
             copyDtsFiles: true
         }),
-        dts({
-            outDir: "dist",
-            entryRoot:'src',
-            tsconfigPath: 'tsconfig.types.json',
-            //rollupTypes: true,
-            copyDtsFiles: true
-        }),
         nodePolyfills({
             exclude: [
                 'http', // Excludes the polyfill for `http` and `node:http`.

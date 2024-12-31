@@ -1,5 +1,6 @@
 
-import { toUrlParams } from '../compatible/url'
+import qs from 'qs'
+import type {ResData} from "@/utils/types";
 
 type IUniUploadFileOptions = {
     file?: File
@@ -16,7 +17,7 @@ export type CustomRequestOptions = UniApp.RequestOptions & {
 } & IUniUploadFileOptions // 添加uni.uploadFile参数类型
 export const http = <T>(options: CustomRequestOptions) => {
     if (options.query) {
-        const queryStr = toUrlParams(options.query)
+        const queryStr = qs.stringify(options.query)
         if (options.url.includes('?')) {
             options.url += `&${queryStr}`
         } else {
