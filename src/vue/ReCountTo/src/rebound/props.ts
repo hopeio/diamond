@@ -1,5 +1,5 @@
 import type { PropType } from "vue";
-import propTypes from "diamond/propTypes";
+import {propTypes} from "@/vue/vue";
 
 export const reboundProps = {
   delay: propTypes.number.def(1),
