@@ -1,5 +1,5 @@
 import type { PropType } from "vue";
-import propTypes from "diamond/propTypes";
+import {propTypes} from "@/vue/vue";
 
 export const countToProps = {
   startVal: propTypes.number.def(0),
