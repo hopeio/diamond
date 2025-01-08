@@ -104,7 +104,12 @@ export default defineConfig({
                 globals,
                 entryFileNames: "[name].[format].js",
                 chunkFileNames: "[name]-[hash].js",
-                assetFileNames: "[name].[ext]",
+                assetFileNames: (assetInfo) => {
+                    if (assetInfo.names[0].endsWith('.css')) {
+                        return 'index.css';
+                    }
+                    return `[name].[ext]`;
+                },
                 exports: "named"
             }
         }
