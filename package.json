@@ -1,6 +1,6 @@
 {
   "name": "@hopeio/utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "javascript utils",
   "main": "dist/index.js",
   "type": "module",
@@ -50,7 +50,6 @@
   "homepage": "https://github.com/hopeio/diamond#readme",
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4030620241128001",
-    "@markusjx/shared_memory": "1.0.1",
     "@pureadmin/utils": "^2.5.0",
     "@vueuse/core": "^12.2.0",
     "axios": "^1.7.9",
