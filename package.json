@@ -1,6 +1,6 @@
 {
   "name": "@hopeio/utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "javascript utils",
   "main": "dist/index.js",
   "type": "module",
@@ -13,7 +13,7 @@
       "import": "./dist/index.es.js",
       "require": "./dist/index.cjs.js"
     },
-    "./diamond.css": "./dist/diamond.css",
+    "./inedx.css": "./dist/inedx.css",
     "./*": {
       "types": "./dist/*/index.d.ts",
       "import": "./dist/*.es.js",
