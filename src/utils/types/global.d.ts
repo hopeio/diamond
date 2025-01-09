@@ -16,7 +16,18 @@ declare global {
             touched?: boolean;
         };
     }
+    interface Window {
+        wx: any;
+        WeixinJSBridge: any;
+        __wxjs_environment: string;
+    }
 
+    interface Point {
+        x: number
+        y: number
+    }
+
+    type Point2D = [number, number];
 }
 
 export {}

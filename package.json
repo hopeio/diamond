@@ -65,6 +65,7 @@
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.14",
+    "@iconify-icons/ep": "^1.2.12",
     "@iconify-icons/ri": "^1.2.10",
     "@iconify/vue": "^4.2.0",
     "@napi-rs/cli": "3.0.0-alpha.64",

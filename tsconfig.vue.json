@@ -9,7 +9,8 @@
     "declarationDir": "./dist"
   },
   "include": [
-    "src/vue/**/*"
+    "src/vue/**/*",
+    "src/utils/types/**/*"
   ],
   "exclude": [
     "./node_modules",
