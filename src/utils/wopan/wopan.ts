@@ -1,6 +1,7 @@
 import {Channel, DefaultClientSecret} from "./const";
 import {decrypt, encrypt} from "../crypto";
 import SparkMD5 from "spark-md5";
+import type {Fetch, HttpResponse} from "@/utils/types";
 class Client {
     private static instance: Client
 
