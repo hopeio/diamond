@@ -25,7 +25,7 @@
     "link": "pnpm link --global",
     "build": "vite build",
     "test": "vitest",
-    "publish": "npm publish --access public",
+    "pub": "npm publish --access public",
     "build:rustbind": "napi build --release",
     "build:rustbind:debug": "napi build"
   },
