@@ -6,6 +6,7 @@ export type UniRequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
     query?: Record<string, any>
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean
+    successMsg?: string
 }
 
 type UniRequestInterceptor = (options: UniApp.RequestOptions) => UniApp.RequestOptions
