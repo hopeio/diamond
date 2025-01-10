@@ -69,7 +69,7 @@ export default defineConfig({
             entryRoot:'src/vue',
             tsconfigPath: 'tsconfig.vue.json',
             //rollupTypes: true,
-            copyDtsFiles: true
+            copyDtsFiles: false
         }),
         nodePolyfills({
             exclude: [
@@ -93,7 +93,7 @@ export default defineConfig({
         outDir: "dist",
         lib: {
             entry: getEntries('src/utils', 'src/vue'),
-            name: "diamond",
+            name: "@hopeio/utils",
             formats: ["es", "cjs"],
         },
         //minify: 'terser',
