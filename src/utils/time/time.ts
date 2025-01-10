@@ -5,8 +5,8 @@ export const toDayjs = (value:string) => dayjs(value, "YYYY-MM-DD HH:mm:ss.SSSZ"
 export const dateToDayjs = (value:string) => dayjs(value, "YYYY-MM-DD");
 export const dateTimeToDayjs = (value:string) => dayjs(value, "YYYY-MM-DD HH:mm:ss");
 export const dateFmt = (value:string, format:string) => dayjs(value,format);
-export const dateFmtDate = (value:Date) => dayjs(value).format("YYYY-MM-DD");
-export const dateFmtDateTime = (value:Date) => dayjs(value).format("YYYY-MM-DD HH:mm:ss");
+export const dateFmtDate = (value:Date|number) => dayjs(value).format("YYYY-MM-DD");
+export const dateFmtDateTime = (value:Date|number) => dayjs(value).format("YYYY-MM-DD HH:mm:ss");
 
 export const dayjsDateFmtDate = (value:Dayjs) => value.format("YYYY-MM-DD");
 export const dayjsDateFmtDateTime = (value:Dayjs) => value.format("YYYY-MM-DD HH:mm:ss");
