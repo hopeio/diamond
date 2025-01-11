@@ -60,9 +60,7 @@ class UniRequest {
     }
 
     // 发起请求，默认配置是defaultConfig，也可以传入config参数覆盖掉默认配置中某些属性
-    public request<
-        T extends string | AnyObject | ArrayBuffer = any,
-    >(
+    public request<T  = any, >(
         method: 'GET' | 'POST' | 'PUT' | 'DELETE',
         url: string,
         config?: UniRequestOptions,
