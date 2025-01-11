@@ -6,3 +6,4 @@ export * from './url';
 export * from './array';
 export * from './tree';
 export * from './idmap';
+export * from './http';
