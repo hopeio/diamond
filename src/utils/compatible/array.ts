@@ -1,4 +1,4 @@
-export function arrayToMapArrValue<T, K>(arr: any[], getKey: (T) => K): Map<K, T[]> {
+export function arrayToMapArrValue<T, K>(arr: any[], getKey: (v:T) => K): Map<K, T[]> {
     return arr.reduce((accumulator, currentValue) => {
         // 获取当前元素的 key 和 value
         const key = getKey(currentValue)
@@ -14,7 +14,7 @@ export function arrayToMapArrValue<T, K>(arr: any[], getKey: (T) => K): Map<K, T
     }, new Map())
 }
 
-export function arrayToMap<T, K>(arr: any[], getKey: (T) => K): Map<K, T> {
+export function arrayToMap<T, K>(arr: any[], getKey: (v:T) => K): Map<K, T> {
     return arr.reduce((accumulator, currentValue) => {
         // 获取当前元素的 key 和 value
         const key = getKey(currentValue)
