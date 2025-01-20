@@ -7,6 +7,15 @@ export type UniRequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean
     successMsg?: string
+    loadingMsg?: string
+}
+
+export type UniUploadFileOptions = {
+    file?: File
+    files?: UniApp.UploadFileOptionFiles[]
+    filePath?: string
+    name?: string
+    formData?: any
 }
 
 type UniRequestInterceptor = (options: UniApp.RequestOptions) => UniApp.RequestOptions
