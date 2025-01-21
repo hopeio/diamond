@@ -18,7 +18,7 @@ export type UniUploadFileOptions = {
     formData?: any
 }
 
-type UniRequestInterceptor = (options: UniApp.RequestOptions) => UniApp.RequestOptions
+type UniRequestInterceptor = (options: UniRequestOptions) => UniRequestOptions
 type UniResponseInterceptor = (
     response: RequestSuccessCallbackResult,
 ) => RequestSuccessCallbackResult|null
@@ -89,6 +89,13 @@ class UniRequest {
                 ? Object.assign(this.defaults.header, config.header)
                 : this.defaults.header
             const timeout = config?.timeout ? config.timeout : this.defaults.timeout
+            // 执行请求拦截器
+            if(this.requestInterceptors.length>0 && !config){
+                config = {}
+            }
+            for (const ri of this.requestInterceptors) {
+                config = ri(config!)
+            }
             let options: UniApp.RequestOptions = {
                 ...config,
                 method,
@@ -118,10 +125,6 @@ class UniRequest {
                 },
             }
 
-            // 执行请求拦截器
-            for (const ri of this.requestInterceptors) {
-                options = ri(options)
-            }
             // 发送请求
             uni.request(options)
         })
