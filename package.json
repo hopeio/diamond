@@ -18,7 +18,8 @@
       "types": "./dist/*/index.d.ts",
       "import": "./dist/*.es.js",
       "require": "./dist/*.cjs.js"
-    }
+    },
+    "./global": "./dist/types/index.d.ts"
   },
   "scripts": {
     "upgrade": "pnpm update --latest",
@@ -33,7 +34,8 @@
     "name": "jarvis"
   },
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "repository": {
     "type": "git",
