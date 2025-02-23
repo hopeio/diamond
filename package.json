@@ -6,7 +6,7 @@
   "type": "module",
   "types": "dist/types/index.d.ts",
   "node": ">v20.1.0",
-  "packageManager": "pnpm@9.15.3",
+  "packageManager": "pnpm@10.4.1",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

@@ -1,4 +1,7 @@
-
+export type Pagination = {
+    pageNo: number;
+    pageSize: number;
+}
 
 export interface HttpResponse<T = ResData> {
     status: number;
@@ -16,3 +19,6 @@ export type ListRep<T = any> = {
     list: T[]
     total?: number
 }
+
+
+export type Fetch<T> = (url: string, method: string, headers: Record<string, string>, body: any) => Promise<HttpResponse<T>>
