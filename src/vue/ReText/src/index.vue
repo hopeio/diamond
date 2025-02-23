@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { h, onMounted, ref, useSlots } from "vue";
+import {h, onMounted, type PropType, ref, useSlots} from "vue";
 import { type TippyOptions, useTippy } from "vue-tippy";
 
 defineOptions({

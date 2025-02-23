@@ -5,7 +5,7 @@ interface PrintFunction {
     toPrint: Function;
 }
 
-const Print = function (dom, options?: object): PrintFunction {
+const Print = function (dom: string|HTMLElement, options?: object): PrintFunction {
     options = options || {};
     // @ts-expect-error
     if (!(this instanceof Print)) return new Print(dom, options);
@@ -47,7 +47,7 @@ Print.prototype = {
      * @param {Object} obj
      * @param {Object} obj2
      */
-    extendOptions: function <T>(obj, obj2: T): T {
+    extendOptions: function <T>(obj:T, obj2: T): T {
         for (const k in obj2) {
             obj[k] = obj2[k];
         }
@@ -74,7 +74,7 @@ Print.prototype = {
 
         for (let k = 0; k < inputs.length; k++) {
             if (inputs[k].type == "checkbox" || inputs[k].type == "radio") {
-                if (inputs[k].checked == true) {
+                if (inputs[k].checked) {
                     inputs[k].setAttribute("checked", "checked");
                 } else {
                     inputs[k].removeAttribute("checked");
@@ -122,7 +122,7 @@ Print.prototype = {
      create iframe
      */
     writeIframe: function (content) {
-        let w: Document | Window;
+        let w: Window | Document | null;
         let doc: Document;
         const iframe: HTMLIFrameElement = document.createElement("iframe");
         const f: HTMLIFrameElement = document.body.appendChild(iframe);
@@ -164,12 +164,12 @@ Print.prototype = {
     /**
      Print
      */
-    toPrint: function (frameWindow): void {
+    toPrint: function (frameWindow:Window): void {
         try {
             setTimeout(function () {
                 frameWindow.focus();
                 try {
-                    if (!frameWindow.document.execCommand("print", false, null)) {
+                    if (!frameWindow.document.execCommand("print", false)) {
                         frameWindow.print();
                     }
                 } catch {
@@ -183,10 +183,10 @@ Print.prototype = {
     },
     isDOM:
         typeof HTMLElement === "object"
-            ? function (obj) {
+            ? function (obj:object) {
                 return obj instanceof HTMLElement;
             }
-            : function (obj) {
+            : function (obj:object) {
                 return (
                     obj &&
                     typeof obj === "object" &&
@@ -198,7 +198,7 @@ Print.prototype = {
      * Set the height of the specified dom element by getting the existing height of the dom element and setting
      * @param {Array} arr
      */
-    setDomHeight(arr) {
+    setDomHeight(arr:Array<any>) {
         if (arr && arr.length) {
             arr.forEach(name => {
                 const domArr = document.querySelectorAll(name);
