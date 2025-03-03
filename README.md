@@ -3,4 +3,4 @@ javascript utils
 
 # dev
 `pnpm link --global`
-`pnpm link --global diamond`
+`pnpm link --global @hopeio/utils`
