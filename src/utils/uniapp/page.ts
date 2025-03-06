@@ -1,3 +1,4 @@
+
 /**
  * 获取当前页面路由的 path 路劲和 redirectPath 路径
  * path 如 ‘/pages/login/index’
@@ -19,7 +20,7 @@ export const currRoute = () => {
     return getUrlObj(fullPath)
 }
 
-export const ensureDecodeURIComponent = (url: string) => {
+export function ensureDecodeURIComponent(url: string){
     if (url.startsWith('%')) {
         return ensureDecodeURIComponent(decodeURIComponent(url))
     }
@@ -63,8 +64,8 @@ export class PageHelper {
         }
         // getCurrentPages() 至少有1个元素，所以不再额外判断
         const lastPage = getCurrentPages().at(-1)
-        const currPath = lastPage.route
-        return !!this.pagesJson.tabBar.list.find((e) => e.pagePath === currPath)
+        const currPath = lastPage?.route
+        return !!this.pagesJson.tabBar.list.find((e:any) => e.pagePath === currPath)
     }
 
 
@@ -83,20 +84,20 @@ export class PageHelper {
         // 这里处理主包
         const mainPages = [
             ...this.pagesJson.pages
-                .filter((page) => !key || page[key])
-                .map((page) => ({
+                .filter((page:any) => !key || page[key])
+                .map((page:any) => ({
                     ...page,
                     path: `/${page.path}`,
                 })),
         ]
         // 这里处理分包
         const subPages: any[] = []
-        this.pagesJson.subPackages.forEach((subPageObj) => {
+        this.pagesJson.subPackages.forEach((subPageObj:any) => {
             // console.log(subPageObj)
             const {root} = subPageObj
 
             subPageObj.pages
-                .filter((page) => !key || page[key])
+                .filter((page:any) => !key || page[key])
                 .forEach((page: { path: string } & Record<string, any>) => {
                     subPages.push({
                         ...page,
