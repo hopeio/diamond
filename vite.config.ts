@@ -5,6 +5,7 @@ import path from "node:path";
 import dts from 'vite-plugin-dts'
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import {nodePolyfills} from 'vite-plugin-node-polyfills'
+import tailwindcss from '@tailwindcss/vite';
 
 function getEntries(...dirs: string[]) {
     const entries: Record<string, string> = {};
@@ -57,6 +58,7 @@ export default defineConfig({
     plugins: [
         vue(),
         vueJsx(),
+        tailwindcss(),
         dts({
             outDir: "dist",
             entryRoot:'src/utils',
