@@ -20,7 +20,7 @@ const fullscreen = ref(false);
 
 const footerButtons = computed(() => {
   return (options: DialogOptions) => {
-    return options?.footerButtons?.length > 0
+    return options?.footerButtons?.length! > 0
       ? options.footerButtons
       : ([
           {

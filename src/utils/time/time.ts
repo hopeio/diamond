@@ -14,3 +14,11 @@ export const dayjsDateFmtDateTime = (value:Dayjs) => value.format("YYYY-MM-DD HH
 export function timestamp(dateString:string) {
     return new Date(dateString).getTime()
 }
+
+export function sleep(time:number) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(true)
+        }, time)
+    })
+}
