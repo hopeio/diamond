@@ -1,13 +1,13 @@
 import { useEventListener } from "@vueuse/core";
 
 /** 是否为`img`标签 */
-function isImgElement(element) {
+export function isImgElement(element: HTMLElement) {
   return typeof HTMLImageElement !== "undefined"
     ? element instanceof HTMLImageElement
     : element.tagName.toLowerCase() === "img";
 }
 
-// 在 src/main.ts 引入并调用即可 import { addPreventDefault } from "@/utils/preventDefault"; addPreventDefault();
+// 在 src/main.ts 引入并调用即可 import { addPreventDefault } from "@hopeio/utils/preventDefault"; addPreventDefault();
 export const addPreventDefault = () => {
   // 阻止通过键盘F12快捷键打开浏览器开发者工具面板
   useEventListener(
