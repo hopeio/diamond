@@ -1,11 +1,7 @@
 export function sleep(delay:number) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         setTimeout(() => {
-            try {
-                resolve(1)
-            } catch (e) {
-                reject(0)
-            }
+            resolve(true)
         }, delay);
     })
 }
