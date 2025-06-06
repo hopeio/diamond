@@ -30,7 +30,7 @@ export interface RequestSuccessCallbackResult extends  UniApp.RequestSuccessCall
     config?: UniRequestOptions
 }
 
-class UniRequest {
+export class UniRequest {
     constructor(defaultConfig?: UniRequestOptions) {
         if (defaultConfig) {
             this.defaults = Object.assign(this.defaults, defaultConfig)
