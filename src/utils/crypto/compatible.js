@@ -1,12 +1,14 @@
 import {webcrypto} from "crypto";
 
+export let compatiblecrypto;
 // 在node中
 if (typeof crypto === 'undefined') {
-    crypto = webcrypto;
+    compatiblecrypto = webcrypto;
+}else {
+    compatiblecrypto = crypto;
 }
 
-export const compatiblecrypto = crypto;
-const subtle = crypto.subtle;
+const subtle = compatiblecrypto.subtle;
 
 
 // 加密数据
