@@ -1,7 +1,7 @@
 import qs from 'qs'
 
 /* eslint-disable no-param-reassign */
-export type UniRequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
+export type RequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
     baseUrl?: string
     query?: Record<string, any>
     /** 出错时是否隐藏错误提示 */
@@ -10,7 +10,7 @@ export type UniRequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
     loadingMsg?: string
 }
 
-export type UniUploadFileOptions = {
+export type UploadFileOptions = {
     file?: File
     files?: UniApp.UploadFileOptionFiles[]
     filePath?: string
@@ -18,27 +18,27 @@ export type UniUploadFileOptions = {
     formData?: any
 }
 
-type UniRequestInterceptor = (options: UniRequestOptions) => UniRequestOptions
-type UniResponseInterceptor = (
+type RequestInterceptor = (options: RequestOptions) => RequestOptions
+type ResponseInterceptor = (
     response: RequestSuccessCallbackResult,
 ) => RequestSuccessCallbackResult|null
-type UniResponseErrorInterceptor = (
+type ResponseErrorInterceptor = (
     err: UniApp.GeneralCallbackResult,
 ) => any
 
 export interface RequestSuccessCallbackResult extends  UniApp.RequestSuccessCallbackResult{
-    config?: UniRequestOptions
+    config?: RequestOptions
 }
 
-export class UniRequest {
-    constructor(defaultConfig?: UniRequestOptions) {
+export class Request {
+    constructor(defaultConfig?: RequestOptions) {
         if (defaultConfig) {
             this.defaults = Object.assign(this.defaults, defaultConfig)
         }
     }
 
     // 默认的请求配置
-    public defaults: UniRequestOptions = {
+    public defaults: RequestOptions = {
         baseUrl: '',
         header: {},
         dataType: 'json',
@@ -49,19 +49,19 @@ export class UniRequest {
     }
 
     // 请求拦截器
-    private requestInterceptors = [] as UniRequestInterceptor[]
+    private requestInterceptors = [] as RequestInterceptor[]
     // 响应拦截器
-    private responseInterceptors = [] as UniResponseInterceptor[]
+    private responseInterceptors = [] as ResponseInterceptor[]
     // 响应错误拦截器
-    private responseErrorInterceptors = [] as UniResponseErrorInterceptor[]
+    private responseErrorInterceptors = [] as ResponseErrorInterceptor[]
     public interceptors = {
         request: {
-            use: (ri: UniRequestInterceptor) => {
+            use: (ri: RequestInterceptor) => {
                 this.requestInterceptors.push(ri)
             },
         },
         response: {
-            use: (ri: UniResponseInterceptor, ei: UniResponseErrorInterceptor) => {
+            use: (ri: ResponseInterceptor, ei: ResponseErrorInterceptor) => {
                 this.responseInterceptors.push(ri)
                 this.responseErrorInterceptors.push(ei)
             },
@@ -72,7 +72,7 @@ export class UniRequest {
     public request<T  = any, >(
         method: 'GET' | 'POST' | 'PUT' | 'DELETE',
         url: string,
-        config?: UniRequestOptions,
+        config?: RequestOptions,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             // 接口请求支持通过 query 参数配置 queryString
@@ -133,31 +133,31 @@ export class UniRequest {
     // 发起get请求
     public get<
         T extends string | AnyObject | ArrayBuffer = any
-    >(url: string, config?: UniRequestOptions) {
+    >(url: string, config?: RequestOptions) {
         return this.request<T>('GET', url, config)
     }
 
     // 发起post请求
     public post<
         T extends string | AnyObject | ArrayBuffer = any
-    >(url: string,  config?: UniRequestOptions) {
+    >(url: string,  config?: RequestOptions) {
         return this.request<T>('POST', url,  config)
     }
 
     public put<
         T extends string | AnyObject | ArrayBuffer = any
-    >(url: string,  config?: UniRequestOptions) {
+    >(url: string,  config?: RequestOptions) {
         return this.request<T>('PUT', url,  config)
     }
 
     public delete<
         T extends string | AnyObject | ArrayBuffer = any
-    >(url: string,  config?: UniRequestOptions) {
+    >(url: string,  config?: RequestOptions) {
         return this.request<T>('DELETE', url, config)
     }
 }
 
-export const unirequest = new UniRequest({
+export const request = new Request({
     header: {
         'content-type': 'application/json',
         //'user-agent': 'uniapp-' + uni.getAppBaseInfo().appName,
