@@ -30,7 +30,7 @@ export interface RequestSuccessCallbackResult extends  UniApp.RequestSuccessCall
     config?: RequestOptions
 }
 
-export class Request {
+export class HttpClient {
     constructor(defaultConfig?: RequestOptions) {
         if (defaultConfig) {
             this.defaults = Object.assign(this.defaults, defaultConfig)
@@ -157,7 +157,7 @@ export class Request {
     }
 }
 
-export const request = new Request({
+export const httpclient = new HttpClient({
     header: {
         'content-type': 'application/json',
         //'user-agent': 'uniapp-' + uni.getAppBaseInfo().appName,
