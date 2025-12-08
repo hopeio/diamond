@@ -69,7 +69,7 @@ export class HttpClient {
     }
 
     // 发起请求，默认配置是defaultConfig，也可以传入config参数覆盖掉默认配置中某些属性
-    public request<T  = any, >(
+    public request<T>(
         method: 'GET' | 'POST' | 'PUT' | 'DELETE',
         url: string,
         config?: RequestOptions,
@@ -131,28 +131,20 @@ export class HttpClient {
     }
 
     // 发起get请求
-    public get<
-        T extends string | AnyObject | ArrayBuffer = any
-    >(url: string, config?: RequestOptions) {
+    public get<T>(url: string, config?: RequestOptions) {
         return this.request<T>('GET', url, config)
     }
 
     // 发起post请求
-    public post<
-        T extends string | AnyObject | ArrayBuffer = any
-    >(url: string,  config?: RequestOptions) {
+    public post<T>(url: string,  config?: RequestOptions) {
         return this.request<T>('POST', url,  config)
     }
 
-    public put<
-        T extends string | AnyObject | ArrayBuffer = any
-    >(url: string,  config?: RequestOptions) {
+    public put<T>(url: string,  config?: RequestOptions) {
         return this.request<T>('PUT', url,  config)
     }
 
-    public delete<
-        T extends string | AnyObject | ArrayBuffer = any
-    >(url: string,  config?: RequestOptions) {
+    public delete<T>(url: string,  config?: RequestOptions) {
         return this.request<T>('DELETE', url, config)
     }
 }
