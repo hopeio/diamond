@@ -51,6 +51,7 @@
   },
   "homepage": "https://github.com/hopeio/diamond#readme",
   "dependencies": {
+    "@bufbuild/protobuf": "^2.10.1",
     "@dcloudio/uni-app": "3.0.0-alpha-4080720251125001",
     "@pureadmin/utils": "^2.5.0",
     "@vueuse/core": "^12.2.0",

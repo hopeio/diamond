@@ -7,6 +7,7 @@ import axios, {
     type AxiosInterceptorOptions, type InternalAxiosRequestConfig, type AxiosRequestConfig, type AxiosRequestHeaders,
     type AxiosHeaderValue,
 } from "axios";
+import {BinaryReader} from "@bufbuild/protobuf/wire";
 
 
 interface Error extends AxiosError {
@@ -22,6 +23,8 @@ interface InternalRequestConfig extends RequestConfig {
 }
 
 interface RequestConfig extends AxiosRequestConfig {
+    decode?: <T>(input: BinaryReader | Uint8Array, length?: number) => T
+    stream?: <T>(input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<T>
     successMsg?: string;
     beforeRequestCallback?: (request: RequestConfig) => void;
     beforeResponseCallback?: (response: Response) => void;
@@ -96,6 +99,26 @@ export class HttpClient {
             this.instance
                 .request(config)
                 .then(response => {
+                    switch (config!.responseType) {
+                        case 'blob':
+                            if (config!.decode){
+                                resolve(config!.decode(response.data))
+                                return
+                            }
+                            break
+                        case 'arraybuffer':
+                            if (config!.decode){
+                                resolve(config!.decode(response.data))
+                                return
+                            }
+                            break
+                        case 'stream':
+                            if (config!.stream){
+                                resolve(config!.stream(response.data))
+                                return
+                            }
+                            break
+                    }
                     resolve(response.data);
                 }).catch((err: Error) => {
                     reject(err);
