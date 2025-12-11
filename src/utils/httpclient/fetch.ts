@@ -1,5 +1,6 @@
 import qs from 'qs'
 import type {ResponseType} from './type.ts'
+import {copypropertyIfNotExist} from "@/utils/compatible";
 
 
 /* eslint-disable no-param-reassign */
@@ -8,7 +9,7 @@ type RequestOptions = RequestInit & {
     timeout?: number
     baseUrl?: string
     query?: Record<string, any>
-    responseType: ResponseType
+    responseType?: ResponseType
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean
     successMsg?: string
@@ -68,7 +69,11 @@ export class FetchClient {
         config?: RequestOptions,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            config = {...this.defaults, ...config, method: method, url: url}
+            if (!config){
+                config =  { method: method, url: url}
+            }
+            copypropertyIfNotExist(config, this.defaults)
+
             // 接口请求支持通过 query 参数配置 queryString
             if (config.query) {
                 const queryStr = qs.stringify(config.query)
@@ -83,11 +88,10 @@ export class FetchClient {
             } else {
                 config.url = (config?.baseUrl || this.defaults.baseUrl) + url
             }
-
-            if (config.headers) {
-                config.headers = {...this.defaults.headers, ...config.headers}
-            } else {
-                config.headers = {...this.defaults.headers}
+            if(!config.headers){
+                config.headers =  {...this.defaults.headers}
+            }else if(this.defaults.headers){
+                copypropertyIfNotExist(config.headers, this.defaults.headers)
             }
 
             // 执行请求拦截器

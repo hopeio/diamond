@@ -1,4 +1,5 @@
 import qs from 'qs'
+import {copypropertyIfNotExist} from "@/utils/compatible";
 
 /* eslint-disable no-param-reassign */
 export type RequestOptions = UniApp.RequestOptions & {
@@ -76,7 +77,10 @@ export class HttpClient {
         config?: RequestOptions,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            config = {...this.defaults, ...config, url: url, method: method}
+            if (!config){
+                config =  { method: method, url: url }
+            }
+            copypropertyIfNotExist(config, this.defaults)
             // 接口请求支持通过 query 参数配置 queryString
             if (config.query) {
                 const queryStr = qs.stringify(config.query)
@@ -91,12 +95,15 @@ export class HttpClient {
             } else {
                 config.url = (config?.baseUrl || this.defaults.baseUrl) + url
             }
-            if (config.headers) {
-                config.headers = {...this.defaults.headers, ...config.headers}
-            } else {
-                config.headers = {...this.defaults.headers}
+
+            if (!config.header){
+                config.header =  config.headers
+            }else if(config.headers){
+                copypropertyIfNotExist(config.header,config.headers)
             }
-            config.header = {...config.header, ...config.headers}
+            if(this.defaults.headers){
+                copypropertyIfNotExist(config.header,this.defaults.headers)
+            }
 
             // 执行请求拦截器
             for (const ri of this.requestInterceptors) {
