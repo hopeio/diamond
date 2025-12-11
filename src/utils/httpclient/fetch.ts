@@ -1,6 +1,7 @@
 import qs from 'qs'
 import type {ResponseType} from './type.ts'
 import {copypropertyIfNotExist} from "@/utils/compatible";
+import {BinaryReader} from "@bufbuild/protobuf/wire";
 
 
 /* eslint-disable no-param-reassign */
@@ -10,6 +11,8 @@ type RequestOptions = RequestInit & {
     baseUrl?: string
     query?: Record<string, any>
     responseType?: ResponseType
+    decode?: <T>(input: BinaryReader | Uint8Array, length?: number) => T
+    stream?: <T>(input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<T>
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean
     successMsg?: string
@@ -69,8 +72,8 @@ export class FetchClient {
         config?: RequestOptions,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            if (!config){
-                config =  { method: method, url: url}
+            if (!config) {
+                config = {method: method, url: url}
             }
             copypropertyIfNotExist(config, this.defaults)
 
@@ -88,9 +91,9 @@ export class FetchClient {
             } else {
                 config.url = (config?.baseUrl || this.defaults.baseUrl) + url
             }
-            if(!config.headers){
-                config.headers =  {...this.defaults.headers}
-            }else if(this.defaults.headers){
+            if (!config.headers) {
+                config.headers = {...this.defaults.headers}
+            } else if (this.defaults.headers) {
                 copypropertyIfNotExist(config.headers, this.defaults.headers)
             }
 
@@ -115,30 +118,47 @@ export class FetchClient {
                             return
                         }
                     }
-                    if(res.bodyUsed){
+                    if (res.bodyUsed) {
                         return
                     }
                     switch (config!.responseType) {
                         case 'json':
                             return res.json();
-                            case 'text':
+                        case 'text':
                             return res.text();
-                            case 'blob':
+                        case 'blob':
                             return res.blob();
-                            case 'arraybuffer':
+                        case 'arraybuffer':
                             return res.arrayBuffer();
-                            case 'formdata':
-                             return res.formData();
-                            case 'bytes':
+                        case 'formdata':
+                            return res.formData();
+                        case 'bytes':
                             return res.bytes();
-                            case 'stream':
-                            return res.body;
-                            default:
+                        case 'stream':
+                            if (config!.stream){
+                                return config!.stream!<T>(res.body);
+                            }
+                            return Promise.resolve(res.body);
+                        default:
                             return res.json();
                     }
 
                 }
-            ).then(res=>{
+            ).then(res => {
+                switch (config!.responseType) {
+                    case 'blob':
+                        if (config!.decode){
+                            resolve(config!.decode(res))
+                            return
+                        }
+                        break
+                    case 'arraybuffer':
+                        if (config!.decode){
+                            resolve(config!.decode(res))
+                            return
+                        }
+                        break
+                }
                 resolve(res)
             }).catch(err => {
                 for (const ei of this.responseErrorInterceptors) {
@@ -176,5 +196,4 @@ export const fetchclient = new FetchClient({
         //'user-agent': 'uniapp-' + uni.getAppBaseInfo().appName,
     },
     responseType: 'json',
-    timeout: 10000,
 })

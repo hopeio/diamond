@@ -1,11 +1,14 @@
 import qs from 'qs'
 import {copypropertyIfNotExist} from "@/utils/compatible";
+import {BinaryReader} from "@bufbuild/protobuf/wire";
 
 /* eslint-disable no-param-reassign */
 export type RequestOptions = UniApp.RequestOptions & {
     baseUrl?: string
     query?: Record<string, any>
     headers?: any
+    decode?: <T>(input: BinaryReader | Uint8Array, length?: number) => T
+    stream?: <T>(input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<T>
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean
     successMsg?: string
@@ -22,8 +25,8 @@ export type UploadFileOptions = {
 }
 
 type RequestInterceptor = (options: RequestOptions) => RequestOptions
-type ResponseInterceptor = (response: RequestSuccessCallbackResult,) => RequestSuccessCallbackResult | null
-type ResponseErrorInterceptor = (err: UniApp.GeneralCallbackResult,) => any
+type ResponseInterceptor = (response: RequestSuccessCallbackResult) => RequestSuccessCallbackResult | null
+type ResponseErrorInterceptor = (err: UniApp.GeneralCallbackResult) => any
 
 // 组合优于继承,真好
 export interface RequestSuccessCallbackResult {
@@ -45,7 +48,7 @@ export class HttpClient {
         headers: {},
         dataType: 'json',
         // #ifndef MP-WEIXIN
-        responseType: 'json',
+        responseType: 'text',
         // #endif
         timeout: 30000,
     }
@@ -118,6 +121,14 @@ export class HttpClient {
                         reject(resc)
                         return
                     }
+                }
+                switch (config!.responseType) {
+                    case 'arraybuffer':
+                        if (config!.decode){
+                            resolve(config!.decode(new Uint8Array(res.data as ArrayBuffer)))
+                            return
+                        }
+                        break
                 }
                 resolve(resc.response.data as T)
             }
