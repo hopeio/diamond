@@ -23,8 +23,8 @@ interface InternalRequestConfig extends RequestConfig {
 }
 
 export interface RequestConfig extends AxiosRequestConfig {
-    decode?: <T>(input: Uint8Array, length?: number) => T
-    stream?: <T>(input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<T>
+    decode?: (input: Uint8Array, length?: number) => any
+    stream?: (input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<any>
     successMsg?: string;
     beforeRequestCallback?: (request: RequestConfig) => void;
     beforeResponseCallback?: (response: Response) => void;
