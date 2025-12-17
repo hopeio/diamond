@@ -10,8 +10,8 @@ export type FetchOptions = RequestInit & {
     baseUrl?: string
     query?: Record<string, any>
     responseType?: ResponseType
-    decode?: <T>(input: Uint8Array, length?: number) => T
-    stream?: <T>(input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<T>
+    decode?: (input: Uint8Array, length?: number) => any
+    stream?: (input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<any>
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean
     successMsg?: string
@@ -135,7 +135,7 @@ export class FetchClient {
                             return res.bytes();
                         case 'stream':
                             if (config!.stream) {
-                                return config!.stream!<T>(res.body);
+                                return config!.stream!(res.body);
                             }
                             return Promise.resolve(res.body);
                         default:
