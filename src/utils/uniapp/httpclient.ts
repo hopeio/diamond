@@ -1,13 +1,13 @@
 import qs from 'qs'
 import {copypropertyIfNotExist} from "@/utils/compatible";
-import {BinaryReader} from "@bufbuild/protobuf/wire";
+
 
 /* eslint-disable no-param-reassign */
 export type RequestOptions = UniApp.RequestOptions & {
     baseUrl?: string
     query?: Record<string, any>
     headers?: any
-    decode?: <T>(input: BinaryReader | Uint8Array, length?: number) => T
+    decode?: <T>(input: Uint8Array, length?: number) => T
     stream?: <T>(input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<T>
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean

@@ -1,17 +1,16 @@
 import qs from 'qs'
 import type {ResponseType} from './type.ts'
 import {copypropertyIfNotExist} from "@/utils/compatible";
-import {BinaryReader} from "@bufbuild/protobuf/wire";
 
 
 /* eslint-disable no-param-reassign */
-type RequestOptions = RequestInit & {
+export type FetchOptions = RequestInit & {
     url: string
     timeout?: number
     baseUrl?: string
     query?: Record<string, any>
     responseType?: ResponseType
-    decode?: <T>(input: BinaryReader | Uint8Array, length?: number) => T
+    decode?: <T>(input: Uint8Array, length?: number) => T
     stream?: <T>(input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<T>
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean
@@ -19,26 +18,26 @@ type RequestOptions = RequestInit & {
     loadingMsg?: string
 }
 
-type Defaults = Omit<RequestOptions, 'url'>
+export type FetchDefaults = Omit<FetchOptions, 'url'>
 
-type RequestInterceptor = (options: RequestOptions) => RequestOptions
-type ResponseInterceptor = (response: RequestSuccessCallbackResult) => RequestSuccessCallbackResult | null
-type ResponseErrorInterceptor = (errMsg: string) => any
+export type FetchInterceptor = (options: FetchOptions) => FetchOptions
+type ResponseInterceptor = (response: FetchSuccessCallbackResult) => FetchSuccessCallbackResult | null
+type ResponseErrorInterceptor = (error: any) => any
 
-interface RequestSuccessCallbackResult {
+export interface FetchSuccessCallbackResult {
     response: Response
-    config?: RequestOptions
+    config?: FetchOptions
 }
 
 export class FetchClient {
-    constructor(defaultConfig?: Defaults) {
+    constructor(defaultConfig?: FetchDefaults) {
         if (defaultConfig) {
             this.defaults = Object.assign(this.defaults, defaultConfig)
         }
     }
 
     // 默认的请求配置
-    public defaults: Defaults = {
+    public defaults: FetchDefaults = {
         baseUrl: '',
         responseType: 'json',
         headers: {},
@@ -46,14 +45,14 @@ export class FetchClient {
     }
 
     // 请求拦截器
-    private requestInterceptors = [] as RequestInterceptor[]
+    private requestInterceptors = [] as FetchInterceptor[]
     // 响应拦截器
     private responseInterceptors = [] as ResponseInterceptor[]
     // 响应错误拦截器
     private responseErrorInterceptors = [] as ResponseErrorInterceptor[]
     public interceptors = {
         request: {
-            use: (ri: RequestInterceptor) => {
+            use: (ri: FetchInterceptor) => {
                 this.requestInterceptors.push(ri)
             },
         },
@@ -69,7 +68,7 @@ export class FetchClient {
     public request<T = any>(
         method: 'GET' | 'POST' | 'PUT' | 'DELETE',
         url: string,
-        config?: RequestOptions,
+        config?: FetchOptions,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             if (!config) {
@@ -110,7 +109,7 @@ export class FetchClient {
 
             // 发送请求
             fetch(url, config).then(res => {
-                    let resc: RequestSuccessCallbackResult = {response: res, config: config}
+                    let resc: FetchSuccessCallbackResult = {response: res, config: config}
                     // 执行响应拦截
                     for (const ri of this.responseInterceptors) {
                         if (!ri(resc)) {
@@ -135,7 +134,7 @@ export class FetchClient {
                         case 'bytes':
                             return res.bytes();
                         case 'stream':
-                            if (config!.stream){
+                            if (config!.stream) {
                                 return config!.stream!<T>(res.body);
                             }
                             return Promise.resolve(res.body);
@@ -146,15 +145,15 @@ export class FetchClient {
                 }
             ).then(res => {
                 switch (config!.responseType) {
-                    case 'blob':
-                        if (config!.decode){
-                            resolve(config!.decode(res))
+                    case 'bytes':
+                        if (config!.decode) {
+                            resolve(config!.decode(new Uint8Array(res)))
                             return
                         }
                         break
                     case 'arraybuffer':
-                        if (config!.decode){
-                            resolve(config!.decode(res))
+                        if (config!.decode) {
+                            resolve(config!.decode(new Uint8Array(res)))
                             return
                         }
                         break
@@ -172,20 +171,20 @@ export class FetchClient {
     }
 
     // 发起get请求
-    public get<T>(url: string, config?: RequestOptions) {
+    public get<T>(url: string, config?: FetchOptions) {
         return this.request<T>('GET', url, config)
     }
 
     // 发起post请求
-    public post<T>(url: string, config?: RequestOptions) {
+    public post<T>(url: string, config?: FetchOptions) {
         return this.request<T>('POST', url, config)
     }
 
-    public put<T>(url: string, config?: RequestOptions) {
+    public put<T>(url: string, config?: FetchOptions) {
         return this.request<T>('PUT', url, config)
     }
 
-    public delete<T>(url: string, config?: RequestOptions) {
+    public delete<T>(url: string, config?: FetchOptions) {
         return this.request<T>('DELETE', url, config)
     }
 }
