@@ -4,17 +4,17 @@ import axios, {
     type AxiosResponse,
     type Method,
     type HeadersDefaults,
-    type AxiosInterceptorOptions, type InternalAxiosRequestConfig, type AxiosRequestConfig, type AxiosRequestHeaders,
+    type AxiosInterceptorOptions, type AxiosRequestConfig, type AxiosRequestHeaders,
     type AxiosHeaderValue,
 } from "axios";
-import {BinaryReader} from "@bufbuild/protobuf/wire";
 
 
-interface Error extends AxiosError {
+
+export interface Error extends AxiosError {
     isCancelRequest?: boolean;
 }
 
-interface Response extends AxiosResponse {
+export  interface Response extends AxiosResponse {
     config: InternalRequestConfig;
 }
 
@@ -22,15 +22,15 @@ interface InternalRequestConfig extends RequestConfig {
     headers: AxiosRequestHeaders;
 }
 
-interface RequestConfig extends AxiosRequestConfig {
-    decode?: <T>(input: BinaryReader | Uint8Array, length?: number) => T
+export interface RequestConfig extends AxiosRequestConfig {
+    decode?: <T>(input: Uint8Array, length?: number) => T
     stream?: <T>(input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<T>
     successMsg?: string;
     beforeRequestCallback?: (request: RequestConfig) => void;
     beforeResponseCallback?: (response: Response) => void;
 }
 
-interface Defaults extends Omit<RequestConfig, 'headers'> {
+export interface Defaults extends Omit<RequestConfig, 'headers'> {
     headers: HeadersDefaults & {
         [key: string]: AxiosHeaderValue
     }
@@ -47,7 +47,7 @@ type ResponseInterceptorUse<T> = (
     onRejected?: ((error: any) => any) | null
 ) => number;
 
-interface InterceptorManager<V> {
+export interface InterceptorManager<V> {
     use: V extends Response
         ? ResponseInterceptorUse<V>
         : RequestInterceptorUse<V>;
@@ -74,7 +74,7 @@ export class HttpClient {
     instance: AxiosInstance = axios;
 
     interceptors: {
-        request: InterceptorManager<InternalAxiosRequestConfig>;
+        request: InterceptorManager<InternalRequestConfig>;
         response: InterceptorManager<Response>;
     } = {
         request: axios.interceptors.request,
@@ -99,16 +99,10 @@ export class HttpClient {
             this.instance
                 .request(config)
                 .then(response => {
-                    switch (config!.responseType) {
-                        case 'blob':
-                            if (config!.decode){
-                                resolve(config!.decode(response.data))
-                                return
-                            }
-                            break
+                    switch (response.config.responseType) {
                         case 'arraybuffer':
                             if (config!.decode){
-                                resolve(config!.decode(response.data))
+                                resolve(config!.decode(new Uint8Array(response.data)));
                                 return
                             }
                             break
