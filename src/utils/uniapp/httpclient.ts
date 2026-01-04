@@ -3,7 +3,8 @@ import {copypropertyIfNotExist} from "@/utils/compatible";
 
 
 /* eslint-disable no-param-reassign */
-export type RequestOptions = UniApp.RequestOptions & {
+export type RequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
+    url?: string
     baseUrl?: string
     query?: Record<string, any>
     headers?: any
@@ -144,7 +145,7 @@ export class HttpClient {
             }
 
             // 发送请求
-            uni.request(config)
+            uni.request(config as UniApp.RequestOptions)
         })
     }
 

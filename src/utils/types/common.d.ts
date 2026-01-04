@@ -3,19 +3,19 @@ export type Pagination = {
     pageSize: number;
 }
 
-export interface HttpResponse<T = ResData> {
+export interface HttpResponse<T = CommonResp> {
     status: number;
     data: T;
     headers: Headers;
 }
 
-export type ResData<T = any> = {
+export type CommonResp<T = any> = {
     code: number
     msg?: string
     data?: T
 }
 
-export type ListRep<T = any> = {
+export type ListResp<T = any> = {
     list: T[]
     total?: number
 }
