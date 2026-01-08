@@ -14,3 +14,17 @@ export const dayjsDateFmtDateTime = (value:Dayjs) => value.format("YYYY-MM-DD HH
 export function timestamp(dateString:string) {
     return new Date(dateString).getTime()
 }
+
+export interface Timestamp {
+    seconds: number;
+    nanos: number;
+}
+
+export function pbTimeToDayjs(pbTime: Timestamp): Dayjs {
+    return dayjs(pbTime.seconds * 1000 + pbTime.nanos / 1000000);
+}
+
+export function unixToDayjs(seconds: number, nanos: number = 0): Dayjs {
+    return dayjs(seconds * 1000 + nanos / 1000000);
+}
+
