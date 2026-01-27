@@ -1,4 +1,3 @@
-import qs from 'qs'
 import {copypropertyIfNotExist} from "@/utils/compatible";
 
 
@@ -6,7 +5,7 @@ import {copypropertyIfNotExist} from "@/utils/compatible";
 export type RequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
     url?: string
     baseUrl?: string
-    query?: Record<string, any>
+    query?: Record<string, string|number>
     headers?: any
     decode?: (input: Uint8Array, length?: number) => any
     stream?: (input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<any>
@@ -87,7 +86,7 @@ export class HttpClient {
             copypropertyIfNotExist(config, this.defaults)
             // 接口请求支持通过 query 参数配置 queryString
             if (config.query) {
-                const queryStr = qs.stringify(config.query)
+                const queryStr = Object.keys(config.query).map((key) => `${key}=${config!.query![key]}`)
                 if (url.includes('?')) {
                     url += `&${queryStr}`
                 } else {
