@@ -61,17 +61,35 @@ export default defineConfig({
         tailwindcss(),
         dts({
             outDir: "dist",
-            entryRoot:'src/utils',
+            entryRoot: 'src/utils',
             tsconfigPath: 'tsconfig.utils.json',
             //rollupTypes: true,
-            copyDtsFiles: true
+            copyDtsFiles: true,
+            beforeWriteFile: (filePath: string, content: string) => {
+                const outDirAbs = path.resolve(__dirname, 'dist');
+                if (!filePath.startsWith(outDirAbs)) {
+                    const entryRootAbs = path.resolve(__dirname, 'src/utils');
+                    if (filePath.startsWith(entryRootAbs)) {
+                        return { filePath: outDirAbs + filePath.slice(entryRootAbs.length), content };
+                    }
+                }
+            }
         }),
         dts({
             outDir: "dist",
-            entryRoot:'src/vue',
+            entryRoot: 'src/vue',
             tsconfigPath: 'tsconfig.vue.json',
             //rollupTypes: true,
-            copyDtsFiles: false
+            copyDtsFiles: false,
+            beforeWriteFile: (filePath: string, content: string) => {
+                const outDirAbs = path.resolve(__dirname, 'dist');
+                if (!filePath.startsWith(outDirAbs)) {
+                    const entryRootAbs = path.resolve(__dirname, 'src/vue');
+                    if (filePath.startsWith(entryRootAbs)) {
+                        return { filePath: outDirAbs + filePath.slice(entryRootAbs.length), content };
+                    }
+                }
+            }
         }),
         nodePolyfills({
             exclude: [
