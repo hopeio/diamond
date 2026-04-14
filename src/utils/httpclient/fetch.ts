@@ -1,17 +1,17 @@
 import qs from 'qs'
-import type {ResponseType} from './type.ts'
-import {copypropertyIfNotExist} from "@/utils/compatible";
-
+import type { ResponseType } from './type.ts'
+import { copypropertyIfNotExist } from "@/utils/compatible";
+import type { Decode, Stream } from '../types';
 
 /* eslint-disable no-param-reassign */
-export type FetchOptions = RequestInit & {
+export type FetchOptions<T = any> = RequestInit & {
     url: string
     timeout?: number
     baseUrl?: string
     query?: Record<string, any>
     responseType?: ResponseType
-    decode?: (input: Uint8Array, length?: number) => any
-    stream?: (input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<any>
+    decode?: Decode<T>
+    stream?: Stream<T>
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean
     successMsg?: string
@@ -72,7 +72,7 @@ export class FetchClient {
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             if (!config) {
-                config = {method: method, url: url}
+                config = { method: method, url: url }
             }
             copypropertyIfNotExist(config, this.defaults)
 
@@ -91,7 +91,7 @@ export class FetchClient {
                 config.url = (config?.baseUrl || this.defaults.baseUrl) + url
             }
             if (!config.headers) {
-                config.headers = {...this.defaults.headers}
+                config.headers = { ...this.defaults.headers }
             } else if (this.defaults.headers) {
                 copypropertyIfNotExist(config.headers, this.defaults.headers)
             }
@@ -109,51 +109,51 @@ export class FetchClient {
 
             // 发送请求
             fetch(url, config).then(res => {
-                    let resc: FetchSuccessCallbackResult = {response: res, config: config}
-                    // 执行响应拦截
-                    for (const ri of this.responseInterceptors) {
-                        if (!ri(resc)) {
-                            reject(resc)
-                            return
-                        }
-                    }
-                    if (res.bodyUsed) {
+                let resc: FetchSuccessCallbackResult = { response: res, config: config }
+                // 执行响应拦截
+                for (const ri of this.responseInterceptors) {
+                    if (!ri(resc)) {
+                        reject(resc)
                         return
                     }
-                    switch (config!.responseType) {
-                        case 'json':
-                            return res.json();
-                        case 'text':
-                            return res.text();
-                        case 'blob':
-                            return res.blob();
-                        case 'arraybuffer':
-                            return res.arrayBuffer();
-                        case 'formdata':
-                            return res.formData();
-                        case 'bytes':
-                            return res.bytes();
-                        case 'stream':
-                            if (config!.stream) {
-                                return config!.stream!(res.body);
-                            }
-                            return Promise.resolve(res.body);
-                        default:
-                            return res.json();
-                    }
-
                 }
+                if (res.bodyUsed) {
+                    return
+                }
+                switch (config!.responseType) {
+                    case 'json':
+                        return res.json();
+                    case 'text':
+                        return res.text();
+                    case 'blob':
+                        return res.blob();
+                    case 'arraybuffer':
+                        return res.arrayBuffer();
+                    case 'formdata':
+                        return res.formData();
+                    case 'bytes':
+                        return res.bytes();
+                    case 'stream':
+                        return Promise.resolve(res.body);
+                    default:
+                        return res.json();
+                }
+
+            }
             ).then(res => {
                 switch (config!.responseType) {
-                    case 'bytes':
-                        if (config!.decode) {
-                            resolve(config!.decode(new Uint8Array(res)))
-                            return
+                    case 'stream':
+                        if (config!.stream) {
+                            const s = config!.stream
+                            return typeof s === 'function' ? s(res.body) : s.stream(res.body)
                         }
                         break
+                    case 'bytes':
                     case 'arraybuffer':
                         if (config!.decode) {
-                            resolve(config!.decode(new Uint8Array(res)))
+                            const dec = config!.decode
+                            const buf = new Uint8Array(res)
+                            resolve(typeof dec === 'function' ? dec(buf) : dec.decode(buf))
                             return
                         }
                         break

@@ -1,27 +1,17 @@
-import {copypropertyIfNotExist} from "@/utils/compatible";
-
-
+import { copypropertyIfNotExist } from "@/utils/compatible";
+import qs from 'qs';
+import type { Decode } from '../types';
 /* eslint-disable no-param-reassign */
-export type RequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
+export type RequestOptions<T = any> = Omit<UniApp.RequestOptions, 'url'> & {
     url?: string
-    baseUrl?: string
-    query?: Record<string, string|number>
+    baseURL?: string
+    query?: Record<string, string | number>
     headers?: any
-    decode?: (input: Uint8Array, length?: number) => any
-    stream?: (input: ReadableStream<Uint8Array<ArrayBuffer>> | null) => Promise<any>
+    decode?: Decode<T>
     /** 出错时是否隐藏错误提示 */
     hideErrorToast?: boolean
     successMsg?: string
     loadingMsg?: string
-}
-export type Defaults = Omit<RequestOptions, 'url'>
-
-export type UploadFileOptions = {
-    file?: File
-    files?: UniApp.UploadFileOptionFiles[]
-    filePath?: string
-    name?: string
-    formData?: any
 }
 
 type RequestInterceptor = (options: RequestOptions) => RequestOptions
@@ -35,15 +25,15 @@ export interface RequestSuccessCallbackResult {
 }
 
 export class HttpClient {
-    constructor(defaultConfig?: Defaults) {
+    constructor(defaultConfig?: RequestOptions) {
         if (defaultConfig) {
             this.defaults = Object.assign(this.defaults, defaultConfig)
         }
     }
 
     // 默认的请求配置
-    public defaults: Defaults = {
-        baseUrl: '',
+    public defaults: RequestOptions = {
+        baseURL: '',
         header: {},
         headers: {},
         dataType: 'json',
@@ -77,16 +67,17 @@ export class HttpClient {
     public request<T>(
         method: 'GET' | 'POST' | 'PUT' | 'DELETE',
         url: string,
-        config?: RequestOptions,
+        config?: RequestOptions<T>,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            if (!config){
-                config =  { method: method, url: url }
+            if (!config) {
+                config = {}
             }
+            config.method = method
             copypropertyIfNotExist(config, this.defaults)
             // 接口请求支持通过 query 参数配置 queryString
             if (config.query) {
-                const queryStr = Object.keys(config.query).map((key) => `${key}=${config!.query![key]}`)
+                const queryStr = qs.stringify(config.query)
                 if (url.includes('?')) {
                     url += `&${queryStr}`
                 } else {
@@ -96,16 +87,16 @@ export class HttpClient {
             if (url.startsWith('http')) {
                 config.url = url
             } else {
-                config.url = (config?.baseUrl || this.defaults.baseUrl) + url
+                config.url = (config?.baseURL || this.defaults.baseURL) + url
             }
 
-            if (!config.header){
-                config.header =  config.headers
-            }else if(config.headers){
-                copypropertyIfNotExist(config.header,config.headers)
+            if (!config.header) {
+                config.header = config.headers
+            } else if (config.headers) {
+                copypropertyIfNotExist(config.header, config.headers)
             }
-            if(this.defaults.headers){
-                copypropertyIfNotExist(config.header,this.defaults.headers)
+            if (this.defaults.headers) {
+                copypropertyIfNotExist(config.header, this.defaults.headers)
             }
 
             // 执行请求拦截器
@@ -114,7 +105,7 @@ export class HttpClient {
             }
 
             config.success = (res) => {
-                let resc: RequestSuccessCallbackResult = {response: res, config: config}
+                let resc: RequestSuccessCallbackResult = { response: res, config: config }
                 // 执行响应拦截
                 for (const ri of this.responseInterceptors) {
                     if (!ri(resc)) {
@@ -124,8 +115,10 @@ export class HttpClient {
                 }
                 switch (config!.responseType) {
                     case 'arraybuffer':
-                        if (config!.decode){
-                            resolve(config!.decode(new Uint8Array(res.data as ArrayBuffer)))
+                        if (config!.decode) {
+                            const dec = config!.decode
+                            const buf = new Uint8Array(res.data as ArrayBuffer)
+                            resolve(typeof dec === 'function' ? dec(buf) : dec.decode(buf))
                             return
                         }
                         break

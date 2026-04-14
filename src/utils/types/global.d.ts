@@ -23,7 +23,7 @@ declare global {
      * 扩展 `Element`
      */
     interface Element {
-// v-ripple 作用于 src/directives/ripple/index.ts 文件
+        // v-ripple 作用于 src/directives/ripple/index.ts 文件
         _ripple?: {
             enabled?: boolean;
             centered?: boolean;
@@ -135,12 +135,12 @@ declare global {
         $el: T;
     }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function parseInt(s: string | number, radix?: number): number;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function parseFloat(string: string | number): number;
 }
 
-export {}
+export { }
 
