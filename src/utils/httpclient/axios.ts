@@ -52,7 +52,7 @@ export interface InterceptorManager<V> {
     ? ResponseInterceptorUse<V>
     : RequestInterceptorUse<V>;
 
-    eject(id: number): void;
+    reject(id: number): void;
 
     clear(): void;
 }
@@ -112,7 +112,6 @@ export class HttpClient {
                             if (config!.stream) {
                                 const s = config!.stream
                                 return typeof s === 'function' ? s(res.data) : s.stream(res.data)
-                                return
                             }
                             break
                     }

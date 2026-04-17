@@ -8,7 +8,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "lib": ["ES2023","DOM"],
+    "lib": ["ESNext","DOM"],
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

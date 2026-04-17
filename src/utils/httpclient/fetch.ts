@@ -112,8 +112,9 @@ export class FetchClient {
                 let resc: FetchSuccessCallbackResult = { response: res, config: config }
                 // 执行响应拦截
                 for (const ri of this.responseInterceptors) {
-                    if (!ri(resc)) {
-                        reject(resc)
+                    const result = ri(resc)
+                    if (result != resc) {
+                        reject(result)
                         return
                     }
                 }
