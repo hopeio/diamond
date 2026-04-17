@@ -21,7 +21,7 @@ export type FetchOptions<T = any> = RequestInit & {
 export type FetchDefaults = Omit<FetchOptions, 'url'>
 
 export type FetchInterceptor = (options: FetchOptions) => FetchOptions
-type ResponseInterceptor = (response: FetchSuccessCallbackResult) => FetchSuccessCallbackResult | null
+type ResponseInterceptor = (response: FetchSuccessCallbackResult) => FetchSuccessCallbackResult | any
 type ResponseErrorInterceptor = (error: any) => any
 
 export interface FetchSuccessCallbackResult {

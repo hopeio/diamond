@@ -15,7 +15,7 @@ export type RequestOptions<T = any> = Omit<UniApp.RequestOptions, 'url'> & {
 }
 
 type RequestInterceptor = (options: RequestOptions) => RequestOptions
-type ResponseInterceptor = (response: RequestSuccessCallbackResult) => RequestSuccessCallbackResult | null
+type ResponseInterceptor = (response: RequestSuccessCallbackResult) => RequestSuccessCallbackResult | any
 type ResponseErrorInterceptor = (err: UniApp.GeneralCallbackResult) => any
 
 // 组合优于继承,真好

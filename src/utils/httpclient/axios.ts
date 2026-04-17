@@ -52,7 +52,7 @@ export interface InterceptorManager<V> {
     ? ResponseInterceptorUse<V>
     : RequestInterceptorUse<V>;
 
-    reject(id: number): void;
+    eject(id: number): void;
 
     clear(): void;
 }
