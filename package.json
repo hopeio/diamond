@@ -11,7 +11,7 @@
     "./index.css": "./dist/index.css",
     "./*": {
       "types": "./dist/*/index.d.ts",
-      "import": "./dist/*.esm.js",
+      "import": "./dist/*.es.js",
       "require": "./dist/*.cjs.js"
     },
     "./global": "./dist/types/index.d.ts"
