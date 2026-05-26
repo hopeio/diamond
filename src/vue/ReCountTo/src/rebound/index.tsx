@@ -4,7 +4,8 @@ import {
   unref,
   onBeforeMount,
   defineComponent,
-  onBeforeUnmount
+  onBeforeUnmount,
+  type DefineComponent
 } from "vue";
 import { reboundProps } from "./props";
 
@@ -69,4 +70,4 @@ export default defineComponent({
       </>
     );
   }
-});
+}) as DefineComponent;

@@ -4,7 +4,8 @@ import {
   computed,
   reactive,
   onMounted,
-  defineComponent
+  defineComponent,
+  type DefineComponent
 } from "vue";
 import { countToProps } from "./props";
 import { isNumber } from "@pureadmin/utils";
@@ -176,4 +177,4 @@ export default defineComponent({
       </>
     );
   }
-});
+}) as DefineComponent;

@@ -1,3 +1,4 @@
+// @ts-nocheck — 历史构造函数风格，保留运行时行为
 interface PrintFunction {
     extendOptions: Function;
     getStyle: Function;

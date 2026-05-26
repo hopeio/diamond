@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import reDialog from "./index.vue";
 import { useTimeoutFn } from "@vueuse/core";
 import { withInstall } from "@pureadmin/utils";
@@ -10,7 +10,7 @@ import type {
   DialogOptions
 } from "./type";
 
-const dialogStore = ref<Array<DialogOptions>>([]);
+const dialogStore: Ref<DialogOptions[]> = ref([]);
 
 /** 打开弹框 */
 const addDialog = (options: DialogOptions) => {

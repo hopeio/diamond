@@ -1,7 +1,7 @@
-import type { PropType } from "vue";
+import type { ComponentObjectPropsOptions, PropType } from "vue";
 import {propTypes} from "@/vue/vue";
 
-export const reboundProps = {
+export const reboundProps: ComponentObjectPropsOptions = {
   delay: propTypes.number.def(1),
   blur: propTypes.number.def(2),
   i: {

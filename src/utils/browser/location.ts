@@ -26,7 +26,7 @@ export const parseQueryString = function (): Record<string, string> {
 
   str.replace(
     new RegExp("([^?=&]+)(=([^&]*))?", "g"),
-    ($0, $1, $2, $3) => (objURL[$1] = $3)
+    (_m, key, _eq, val) => (objURL[key] = val)
   );
   return objURL;
 };

@@ -1,7 +1,7 @@
-import type { PropType } from "vue";
+import type { ComponentObjectPropsOptions, PropType } from "vue";
 import {propTypes} from "@/vue/vue";
 
-export const countToProps = {
+export const countToProps: ComponentObjectPropsOptions = {
   startVal: propTypes.number.def(0),
   endVal: propTypes.number.def(2020),
   duration: propTypes.number.def(1300),

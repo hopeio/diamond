@@ -1,6 +1,10 @@
-import { expect, test } from 'vitest'
-import {parseInt} from './number.js'
+import { expect, test } from "vitest";
+import { formatInt, parseInt } from "./number.js";
 
-test('decimalTo62 1 to 1', () => {
-    expect(parseInt(1,62)).toBe('1')
-})
+test("parseInt base62", () => {
+  expect(parseInt("1", 62)).toBe(1);
+});
+
+test("formatInt base62", () => {
+  expect(formatInt(1, 62)).toBe("1");
+});

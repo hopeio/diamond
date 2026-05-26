@@ -1,7 +1,5 @@
 import childProcess from "child_process";
 
-const CommonCmd = ` -i "%s" -y `
-
 let execPath = "ffmpeg"
 
 export function setExecPath(path:string) {

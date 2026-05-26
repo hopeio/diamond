@@ -1,8 +1,6 @@
 const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const charaCode = 'a'.charCodeAt(0)
-const charzCode = 'z'.charCodeAt(0)
 const charzeroCode = '0'.charCodeAt(0)
-const charnineCode = '9'.charCodeAt(0)
 const charACode = 'A'.charCodeAt(0)
 const charZCode = 'Z'.charCodeAt(0)
 
@@ -34,9 +32,3 @@ function findIndex(b) {
     }
     return 36 + b-charACode
 }
-
-console.log(formatInt(1042018,36))
-console.log(parseInt('1hf7eo69lkt',36))
-console.log(parseInt('1hf63bvzph1',36))
-console.log(parseInt('1fpw3y18veq',36))
-console.log(new Date().getTime());

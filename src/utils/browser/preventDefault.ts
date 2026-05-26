@@ -23,6 +23,9 @@ export const addPreventDefault = () => {
   useEventListener(
     window.document,
     "dragstart",
-    ev => isImgElement(ev?.target) && ev.preventDefault()
+    ev => {
+      const target = ev.target;
+      if (target instanceof HTMLElement && isImgElement(target)) ev.preventDefault();
+    }
   );
 };

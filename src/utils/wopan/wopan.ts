@@ -52,9 +52,7 @@ class Client {
         this.refreshToken = refreshToken
     }
 
-    private DefaultBaseURL  = "https://panservice.mail.wo.cn"
-    private DefaultZoneURL  = "https://tjupload.pan.wo.cn"
-    private DefaultPartSize = 8 * 1024 * 1024
+    private DefaultBaseURL = "https://panservice.mail.wo.cn"
     async request<T>(
         channel: Channel,
         key: string,
