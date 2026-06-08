@@ -61,30 +61,14 @@ export default defineConfig({
         tailwindcss(),
         dts({
             outDir: "dist",
-            entryRoot: 'src/utils',
+            entryRoot: 'src',
             tsconfigPath: 'tsconfig.utils.json',
             //rollupTypes: true,
             copyDtsFiles: true,
             beforeWriteFile: (filePath: string, content: string) => {
                 const outDirAbs = path.resolve(__dirname, 'dist');
                 if (!filePath.startsWith(outDirAbs)) {
-                    const entryRootAbs = path.resolve(__dirname, 'src/utils');
-                    if (filePath.startsWith(entryRootAbs)) {
-                        return { filePath: outDirAbs + filePath.slice(entryRootAbs.length), content };
-                    }
-                }
-            }
-        }),
-        dts({
-            outDir: "dist",
-            entryRoot: 'src/vue',
-            tsconfigPath: 'tsconfig.vue.json',
-            //rollupTypes: true,
-            copyDtsFiles: false,
-            beforeWriteFile: (filePath: string, content: string) => {
-                const outDirAbs = path.resolve(__dirname, 'dist');
-                if (!filePath.startsWith(outDirAbs)) {
-                    const entryRootAbs = path.resolve(__dirname, 'src/vue');
+                    const entryRootAbs = path.resolve(__dirname, 'src');
                     if (filePath.startsWith(entryRootAbs)) {
                         return { filePath: outDirAbs + filePath.slice(entryRootAbs.length), content };
                     }
@@ -112,7 +96,7 @@ export default defineConfig({
     build: {
         outDir: "dist",
         lib: {
-            entry: getEntries('src/utils', 'src/vue'),
+            entry: getEntries('src'),
             name: "@hopeio/utils",
             formats: ["es", "cjs"],
         },

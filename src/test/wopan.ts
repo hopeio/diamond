@@ -1,4 +1,4 @@
-import {client,Channel} from "../utils/wopan";
+import {client,Channel} from "../wopan";
 
 
 client.setToken("06e36053-22d5-49f9-ad51-291bbcfeb7e3","f70989e5-f646-4609-846f-1146315cd038")

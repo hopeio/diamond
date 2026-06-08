@@ -1,6 +1,6 @@
 import qs from 'qs'
 import type { ResponseType } from './type.ts'
-import { copypropertyIfNotExist } from "@/utils/compatible";
+import { copypropertyIfNotExist } from "@/compatible";
 import type { Decode, Stream } from '../types';
 
 /* eslint-disable no-param-reassign */

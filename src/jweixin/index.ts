@@ -1,4 +1,4 @@
-import { dynamicLoadJs } from "@/utils/browser";
+import { dynamicLoadJs } from "@/browser";
 
 let active = false;
 

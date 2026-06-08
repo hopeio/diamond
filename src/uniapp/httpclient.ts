@@ -1,4 +1,4 @@
-import { copypropertyIfNotExist } from "@/utils/compatible";
+import { copypropertyIfNotExist } from "@/compatible";
 import qs from 'qs';
 import type { Decode } from '../types';
 /* eslint-disable no-param-reassign */
