@@ -1,2 +1,2 @@
-export * from './httpclient.ts'
+export * from './httpclient'
 export * from './api'

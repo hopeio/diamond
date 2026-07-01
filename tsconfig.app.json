@@ -3,7 +3,7 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "allowJs": true,
-    "types": ["node", "@dcloudio/types","vite/client","element-plus/global"],
+    "types": ["node", "@dcloudio/types", "vite/client"],
     "sourceMap": true,
     "paths": {
       "@/*": ["./src/*"]

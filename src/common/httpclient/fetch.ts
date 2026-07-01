@@ -1,7 +1,7 @@
 import qs from 'qs'
-import type { ResponseType } from './type.ts'
-import { copypropertyIfNotExist } from "@/compatible";
-import type { Decode, Stream } from '../types';
+import type { ResponseType } from './type'
+import { copypropertyIfNotExist } from '../object'
+import type { Decode, Stream } from '../../types';
 
 /* eslint-disable no-param-reassign */
 export type FetchOptions<T = any> = RequestInit & {
