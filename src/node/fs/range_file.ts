@@ -1,4 +1,5 @@
-import fs, {Dirent} from "fs";
+import * as fs from "fs";
+import type {Dirent} from "fs";
 type RangeCallback = (dir:string,name:string,path:string) => void;
 export function range(dir:string,callback:RangeCallback) {
     fs.readdirSync(dir,{withFileTypes:true}).forEach(

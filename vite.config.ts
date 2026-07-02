@@ -1,11 +1,9 @@
 import {defineConfig} from "vite";
-import vue from '@vitejs/plugin-vue'
 import fs from "fs";
 import path from "node:path";
 import dts from 'vite-plugin-dts'
-import vueJsx from "@vitejs/plugin-vue-jsx";
 import {nodePolyfills} from 'vite-plugin-node-polyfills'
-import tailwindcss from '@tailwindcss/vite';
+
 
 function getEntries(...dirs: string[]) {
     const entries: Record<string, string> = {};
@@ -48,21 +46,25 @@ function getExternal(): string[] {
 
 const globals = {
     'spark-md5': 'SparkMD5', // 告诉Rollup全局变量名
-    dayjs: 'dayjs',
-    vue: 'Vue',
-    'element-plus': "ElementPlus",
-    '@pure-admin/table': "PureTable"
+    dayjs: 'dayjs'
 }
 
 export default defineConfig({
     plugins: [
-        vue(),
-        vueJsx(),
-        tailwindcss(),
         dts({
             outDir: "dist",
             entryRoot: 'src',
-            tsconfigPath: 'tsconfig.utils.json',
+            tsconfigPath: 'tsconfig.json',
+            // 声明产物只覆盖 src 且排除测试；与 tsconfig 的 include 解耦，
+            // 避免为 vite.config.ts / 测试文件生成多余 .d.ts。
+            include: ['src/**/*'],
+            exclude: [
+                'src/test/**',
+                '**/test.ts',
+                '**/test.js',
+                '**/*.test.ts',
+                '**/*.test.js',
+            ],
             //rollupTypes: true,
             copyDtsFiles: true,
             beforeWriteFile: (filePath: string, content: string) => {

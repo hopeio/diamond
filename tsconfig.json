@@ -1,7 +1,35 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json"},
-    { "path": "./tsconfig.node.json"}
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "sourceMap": true,
+    "types": ["node", "@dcloudio/types", "vite/client"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "isolatedModules": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/test/**",
+    "**/test.ts",
+    "**/test.js",
+    "**/*.test.ts",
+    "**/*.test.js"
   ]
 }
