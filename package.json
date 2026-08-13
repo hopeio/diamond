@@ -64,6 +64,12 @@
   "peerDependencies": {
     "vue": "^3.5.0"
   },
+  "pnpm": {
+    "overrides": {
+      "rollup": ">=4.59.0",
+      "yaml": ">=2.8.3"
+    }
+  },
   "dependencies": {
     "@vueuse/core": "^14.4.0",
     "axios": "^1.19.0",
