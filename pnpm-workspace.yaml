@@ -1,0 +1,9 @@
+packages:
+  - '.'
+allowBuilds:
+  '@parcel/watcher': true
+# pnpm 11 起 overrides 等配置只认本文件（package.json 的 pnpm 字段与 .npmrc 均被忽略）。
+# 安全覆盖：GHSA-mw96-cpmx-2vgc（rollup 路径穿越）、GHSA-48c2-rrv3-qjmp（yaml 栈溢出）
+overrides:
+  rollup: '>=4.59.0'
+  yaml: '>=2.8.3'
