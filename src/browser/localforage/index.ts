@@ -19,87 +19,49 @@ class StorageProxy implements ProxyStorage {
    * @param m 缓存时间（单位`分`，默认`0`分钟，永久缓存）
    */
   public async setItem<T>(k: string, v: T, m = 0): Promise<T> {
-    return new Promise((resolve, reject) => {
-      this.storage
-        .setItem<ExpiresData<T>>(k, {
-          data: v,
-          expires: m ? new Date().getTime() + m * 60 * 1000 : 0
-        })
-        .then(value => {
-          resolve(value.data);
-        })
-        .catch(err => {
-          reject(err);
-        });
+    const value = await this.storage.setItem<ExpiresData<T>>(k, {
+      data: v,
+      // 负数视为永久，避免写入即过期的意外
+      expires: m > 0 ? new Date().getTime() + m * 60 * 1000 : 0
     });
+    return value.data;
   }
 
   /**
-   * @description 从离线仓库中获取对应键名的值
-   * @param k 键名
+   * @description 从离线仓库中获取对应键名的值；过期条目顺手删除，不再占用存储
    */
   public async getItem<T>(k: string): Promise<T | null> {
-    return new Promise((resolve, reject) => {
-      this.storage
-        .getItem<ExpiresData<T>>(k)
-        .then(value => {
-          value && (value.expires > new Date().getTime() || value.expires === 0)
-            ? resolve(value.data)
-            : resolve(null);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+    const value = await this.storage.getItem<ExpiresData<T>>(k);
+    if (!value) {
+      return null;
+    }
+    if (value.expires === 0 || value.expires > new Date().getTime()) {
+      return value.data;
+    }
+    // 过期即删，失败不影响读取语义
+    this.storage.removeItem(k).catch(() => {});
+    return null;
   }
 
   /**
    * @description 从离线仓库中删除对应键名的值
-   * @param k 键名
    */
   public async removeItem(k: string) {
-    return new Promise<void>((resolve, reject) => {
-      this.storage
-        .removeItem(k)
-        .then(() => {
-          resolve();
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+    return this.storage.removeItem(k);
   }
 
   /**
    * @description 从离线仓库中删除所有的键名，重置数据库
    */
   public async clear() {
-    return new Promise<void>((resolve, reject) => {
-      this.storage
-        .clear()
-        .then(() => {
-          resolve();
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+    return this.storage.clear();
   }
 
   /**
    * @description 获取数据仓库中所有的key
    */
   public async keys() {
-    return new Promise<string[]>((resolve, reject) => {
-      this.storage
-        .keys()
-        .then(keys => {
-          resolve(keys);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+    return this.storage.keys();
   }
 }
 

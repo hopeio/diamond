@@ -1,31 +1,22 @@
-export function arrayToMapArrValue<T, K>(arr: any[], getKey: (v:T) => K): Map<K, T[]> {
-    return arr.reduce((accumulator, currentValue) => {
-        // 获取当前元素的 key 和 value
-        const key = getKey(currentValue)
-        // 如果 accumulator 中已经有这个 key，则在其对应的数组中添加 value
-        if (accumulator.has(key)) {
-            accumulator.get(key).push(currentValue);
+export function arrayToMapArrValue<T, K>(arr: T[], getKey: (v: T) => K): Map<K, T[]> {
+    const result = new Map<K, T[]>()
+    for (const item of arr) {
+        const key = getKey(item)
+        const group = result.get(key)
+        if (group) {
+            group.push(item)
         } else {
-            // 否则，在 accumulator 中创建新的 key-value 对
-            accumulator.set(key, [currentValue]);
+            result.set(key, [item])
         }
-
-        return accumulator;
-    }, new Map())
+    }
+    return result
 }
 
-export function arrayToMap<T, K>(arr: any[], getKey: (v:T) => K): Map<K, T> {
-    return arr.reduce((accumulator, currentValue) => {
-        // 获取当前元素的 key 和 value
-        const key = getKey(currentValue)
-        // 如果 accumulator 中已经有这个 key，则在其对应的数组中添加 value
-        if (accumulator.has(key)) {
-            accumulator.get(key).push(currentValue);
-        } else {
-            // 否则，在 accumulator 中创建新的 key-value 对
-            accumulator.set(key, [currentValue]);
-        }
-
-        return accumulator;
-    }, new Map())
+export function arrayToMap<T, K>(arr: T[], getKey: (v: T) => K): Map<K, T> {
+    // 曾是 arrayToMapArrValue 的复制粘贴，值被包成数组；重复 key 以后者覆盖
+    const result = new Map<K, T>()
+    for (const item of arr) {
+        result.set(getKey(item), item)
+    }
+    return result
 }

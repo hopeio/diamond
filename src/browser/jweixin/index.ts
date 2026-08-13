@@ -3,10 +3,10 @@ import { dynamicLoadJs } from '../script'
 let active = false;
 
 
-function loadwxSDK(version:string =" 1.3.2") {
+function loadwxSDK(version:string = "1.3.2") {
+  // 版本号曾带前导空格，SDK URL 变成 "jweixin- 1.3.2.js" 直接 404
   dynamicLoadJs(`https://res.wx.qq.com/open/js/jweixin-${version}.js`, () =>
-    // 或者
-    window.wx.miniProgram.getEnv(function (res:any) {
+    window.wx?.miniProgram?.getEnv?.(function (res:any) {
       console.log(res.miniprogram); // true
     })
   );
@@ -15,7 +15,7 @@ function loadwxSDK(version:string =" 1.3.2") {
 
 function weBrowser() {
   if (!window.WeixinJSBridge || !window.WeixinJSBridge.invoke) {
-    document.addEventListener("WeixinJSBridgeReady", ready, false);
+    document.addEventListener("WeixinJSBridgeReady", ready, { once: true });
   } else {
     ready();
   }
@@ -24,7 +24,6 @@ function weBrowser() {
 // web-view下的页面内
 function ready() {
   window.WeixinJSBridge.on("onPageStateChange", function (res:any) {
-    console.log("res is active", res.active);
     active = res.active;
   });
 }
@@ -34,7 +33,10 @@ function IsWeappPlatform(): boolean {
 }
 
 export default {
-  active,
+  // 曾导出原始值快照，读到的永远是 false；getter 才能反映实时状态
+  get active() {
+    return active;
+  },
   IsWeappPlatform,
   loadwxSDK,
 };

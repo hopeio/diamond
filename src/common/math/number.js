@@ -5,30 +5,54 @@ const charACode = 'A'.charCodeAt(0)
 const charZCode = 'Z'.charCodeAt(0)
 
 // 10进制与2-62进制转换
-export function formatInt(num,base) {
+export function formatInt(num, base) {
+    if (!Number.isInteger(base) || base < 2 || base > 62) {
+        throw new RangeError(`base must be an integer in [2, 62], got ${base}`)
+    }
+    if (!Number.isFinite(num)) {
+        throw new RangeError(`num must be a finite number, got ${num}`)
+    }
+    num = Math.trunc(num)
+    const negative = num < 0
+    if (negative) num = -num
     let result = ''
     do {
-        let remainder = num % base
-        result += chars.charAt(remainder)
+        result += chars.charAt(num % base)
         num = Math.floor(num / base)
     } while (num > 0)
-    return result.split('').reverse().join('')
+    result = result.split('').reverse().join('')
+    return negative ? '-' + result : result
 }
-export  function parseInt(str,base) {
+
+export function parseInt(str, base) {
+    if (!Number.isInteger(base) || base < 2 || base > 62) {
+        throw new RangeError(`base must be an integer in [2, 62], got ${base}`)
+    }
+    let negative = false
+    if (str.charAt(0) === '-') {
+        negative = true
+        str = str.slice(1)
+    }
     let result = 0
     for (let i = 0, len = str.length; i < len; i++) {
-        let index = findIndex(str.charAt(i).charCodeAt(0)) //chars.indexOf(str[i])
-        let power = len - i - 1
-        result += index * Math.pow(base, power)
+        const index = findIndex(str.charCodeAt(i))
+        if (index < 0 || index >= base) {
+            throw new RangeError(`invalid character '${str.charAt(i)}' for base ${base}`)
+        }
+        result = result * base + index
     }
-    return result
+    return negative ? -result : result
 }
 
 function findIndex(b) {
-    if (b < charACode) {
+    if (b >= charzeroCode && b < charzeroCode + 10) {
         return b - charzeroCode
-    } else if (b > charZCode) {
-        return 10 + b-charaCode
     }
-    return 36 + b-charACode
+    if (b >= charaCode && b < charaCode + 26) {
+        return 10 + b - charaCode
+    }
+    if (b >= charACode && b <= charZCode) {
+        return 36 + b - charACode
+    }
+    return -1
 }

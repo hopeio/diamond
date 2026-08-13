@@ -70,105 +70,101 @@ export class FetchClient {
         url: string,
         config?: FetchOptions,
     ): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            if (!config) {
-                config = { method: method, url: url }
-            }
-            copypropertyIfNotExist(config, this.defaults)
+        let cfg: FetchOptions = config ?? { method, url }
+        // method 必须显式写入；曾只在 config 缺省时设置，POST/PUT/DELETE 带 config 时全部退化成 GET
+        cfg.method = method
+        // headers 先合并成新对象，避免 copypropertyIfNotExist 把 defaults.headers 的引用带进 cfg，
+        // 后续拦截器写 header 会污染全局默认
+        cfg.headers = Object.assign({}, this.defaults.headers, cfg.headers)
+        copypropertyIfNotExist(cfg, this.defaults)
 
-            // 接口请求支持通过 query 参数配置 queryString
-            if (config.query) {
-                const queryStr = qs.stringify(config.query)
-                if (url.includes('?')) {
-                    url += `&${queryStr}`
-                } else {
-                    url += `?${queryStr}`
-                }
-            }
-            if (url.startsWith('http')) {
-                config.url = url
-            } else {
-                config.url = (config?.baseUrl || this.defaults.baseUrl) + url
-            }
-            if (!config.headers) {
-                config.headers = { ...this.defaults.headers }
-            } else if (this.defaults.headers) {
-                copypropertyIfNotExist(config.headers, this.defaults.headers)
-            }
+        // 接口请求支持通过 query 参数配置 queryString
+        if (cfg.query) {
+            const queryStr = qs.stringify(cfg.query)
+            url += (url.includes('?') ? '&' : '?') + queryStr
+        }
+        cfg.url = url.startsWith('http') ? url : (cfg.baseUrl || '') + url
 
-            // 执行请求拦截器
-            for (const ri of this.requestInterceptors) {
-                config = ri(config!)
-            }
+        // 执行请求拦截器
+        for (const ri of this.requestInterceptors) {
+            cfg = ri(cfg)
+        }
 
-            if (config.timeout && !config.signal) {
-                const controller = new AbortController();
-                setTimeout(() => controller.abort(), config.timeout);
-                config.signal = controller.signal;
-            }
+        let timer: ReturnType<typeof setTimeout> | undefined
+        if (cfg.timeout && !cfg.signal) {
+            const controller = new AbortController()
+            timer = setTimeout(() => controller.abort(), cfg.timeout)
+            cfg.signal = controller.signal
+        }
 
-            // 发送请求
-            fetch(url, config).then(res => {
-                let resc: FetchSuccessCallbackResult = { response: res, config: config }
-                // 执行响应拦截
+        // 曾用局部 url 发请求，baseUrl 与拦截器改写的 config.url 全部不生效
+        return fetch(cfg.url, cfg)
+            .then(res => {
+                const resc: FetchSuccessCallbackResult = { response: res, config: cfg }
+                // 执行响应拦截；约定返回原对象表示放行，返回其它值当作错误
                 for (const ri of this.responseInterceptors) {
                     const result = ri(resc)
                     if (result != resc) {
-                        reject(result)
-                        return
+                        return Promise.reject(result)
                     }
                 }
                 if (res.bodyUsed) {
-                    return
+                    // 拦截器已消费 body（如自行读取并抛出业务错误后放行）
+                    return undefined as T
                 }
-                switch (config!.responseType) {
-                    case 'json':
-                        return res.json();
+                switch (cfg.responseType) {
                     case 'text':
-                        return res.text();
+                        return res.text() as Promise<T>
                     case 'blob':
-                        return res.blob();
-                    case 'arraybuffer':
-                        return res.arrayBuffer();
+                        return res.blob() as Promise<T>
                     case 'formdata':
-                        return res.formData();
-                    case 'bytes':
-                        return res.bytes();
-                    case 'stream':
-                        return Promise.resolve(res.body);
-                    default:
-                        return res.json();
-                }
-
-            }
-            ).then(res => {
-                switch (config!.responseType) {
-                    case 'stream':
-                        if (config!.stream) {
-                            const s = config!.stream
-                            return typeof s === 'function' ? s(res.body) : s.stream(res.body)
+                        return res.formData() as Promise<T>
+                    case 'stream': {
+                        // 曾拆成两级 then 后再取 res.body，拿到的永远是 undefined 且不 settle
+                        if (cfg.stream) {
+                            const s = cfg.stream
+                            return (typeof s === 'function' ? s(res.body) : s.stream(res.body)) as Promise<T>
                         }
-                        break
-                    case 'bytes':
-                    case 'arraybuffer':
-                        if (config!.decode) {
-                            const dec = config!.decode
-                            const buf = new Uint8Array(res)
-                            resolve(typeof dec === 'function' ? dec(buf) : dec.decode(buf))
-                            return
-                        }
-                        break
-                }
-                resolve(res)
-            }).catch(err => {
-                for (const ei of this.responseErrorInterceptors) {
-                    if (!ei(err)) {
-                        reject(err)
-                        return
+                        return res.body as T
                     }
+                    case 'bytes':
+                    case 'arraybuffer': {
+                        const data = cfg.responseType === 'bytes' ? res.bytes() : res.arrayBuffer()
+                        if (cfg.decode) {
+                            const dec = cfg.decode
+                            return data.then(raw => {
+                                const buf = raw instanceof Uint8Array ? raw : new Uint8Array(raw)
+                                return typeof dec === 'function' ? dec(buf) : dec.decode(buf)
+                            })
+                        }
+                        return data as Promise<T>
+                    }
+                    case 'json':
+                    default:
+                        return res.json() as Promise<T>
                 }
             })
-        })
+            .catch(err => {
+                // 错误拦截器可转换错误，但最终必须 reject；
+                // 曾在无拦截器（或拦截器全返回 truthy）时既不 resolve 也不 reject，Promise 永久挂起
+                for (const ei of this.responseErrorInterceptors) {
+                    try {
+                        const r = ei(err)
+                        if (r !== undefined) {
+                            err = r
+                        }
+                    } catch (e) {
+                        err = e
+                    }
+                }
+                return Promise.reject(err)
+            })
+            .finally(() => {
+                // 定时器不清理会在请求完成后仍触发 abort，并在 Node 中拖住事件循环
+                if (timer !== undefined) {
+                    clearTimeout(timer)
+                }
+            })
     }
 
     // 发起get请求

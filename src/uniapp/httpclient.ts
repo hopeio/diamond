@@ -74,6 +74,15 @@ export class HttpClient {
                 config = {}
             }
             config.method = method
+            // header 合并成新对象；曾把 defaults.header 的引用直接带进 config，
+            // 拦截器写 header（如加 token）会污染全局默认，串到所有后续请求
+            config.header = Object.assign(
+                {},
+                this.defaults.header,
+                this.defaults.headers,
+                config.headers,
+                config.header,
+            )
             copypropertyIfNotExist(config, this.defaults)
             // 接口请求支持通过 query 参数配置 queryString
             if (config.query) {
@@ -90,41 +99,37 @@ export class HttpClient {
                 config.url = (config?.baseURL || this.defaults.baseURL) + url
             }
 
-            if (!config.header) {
-                config.header = config.headers
-            } else if (config.headers) {
-                copypropertyIfNotExist(config.header, config.headers)
-            }
-            if (this.defaults.headers) {
-                copypropertyIfNotExist(config.header, this.defaults.headers)
-            }
-
-            // 执行请求拦截器
+            // 执行请求拦截器；拦截器忘记 return 时沿用原 config，避免后续解引用崩溃
             for (const ri of this.requestInterceptors) {
-                config = ri(config!)
+                config = ri(config!) ?? config
             }
 
             config.success = (res) => {
-                let resc: RequestSuccessCallbackResult = { response: res, config: config }
-                // 执行响应拦截
-                for (const ri of this.responseInterceptors) {
-                    const result = ri(resc)
-                    if (result != resc) {
-                        reject(result)
-                        return
-                    }
-                }
-                switch (config!.responseType) {
-                    case 'arraybuffer':
-                        if (config!.decode) {
-                            const dec = config!.decode
-                            const buf = new Uint8Array(res.data as ArrayBuffer)
-                            resolve(typeof dec === 'function' ? dec(buf) : dec.decode(buf))
+                // 拦截器或 decode 抛错时必须 reject；uni 会吞掉 success 回调内的异常，Promise 永不 settle
+                try {
+                    let resc: RequestSuccessCallbackResult = { response: res, config: config }
+                    // 执行响应拦截
+                    for (const ri of this.responseInterceptors) {
+                        const result = ri(resc)
+                        if (result != resc) {
+                            reject(result)
                             return
                         }
-                        break
+                    }
+                    switch (config!.responseType) {
+                        case 'arraybuffer':
+                            if (config!.decode) {
+                                const dec = config!.decode
+                                const buf = new Uint8Array(res.data as ArrayBuffer)
+                                resolve(typeof dec === 'function' ? dec(buf) : dec.decode(buf))
+                                return
+                            }
+                            break
+                    }
+                    resolve(resc.response.data as T)
+                } catch (e) {
+                    reject(e)
                 }
-                resolve(resc.response.data as T)
             }
             config.fail = (err) => {
                 // 执行响应错误拦截

@@ -8,7 +8,7 @@ import axios, {
     type AxiosHeaderValue,
 } from "axios";
 
-import type { Decode, Stream } from '../types';
+import type { Decode, Stream } from '../../types';
 
 export interface Error extends AxiosError {
     isCancelRequest?: boolean;
@@ -94,32 +94,27 @@ export class HttpClient {
             config.url = url;
         }
 
-        // 单独处理自定义请求/响应回调
-        return new Promise((resolve, reject) => {
-            this.instance
-                .request(config as AxiosRequestConfig<T>)
-                .then(res => {
-                    switch (res.config.responseType) {
-                        case 'arraybuffer':
-                            if (config!.decode) {
-                                const dec = config!.decode
-                                const buf = new Uint8Array(res.data as ArrayBuffer)
-                                resolve(typeof dec === 'function' ? dec(buf) : dec.decode(buf))
-                                return
-                            }
-                            break
-                        case 'stream':
-                            if (config!.stream) {
-                                const s = config!.stream
-                                return typeof s === 'function' ? s(res.data) : s.stream(res.data)
-                            }
-                            break
-                    }
-                    resolve(res.data);
-                }).catch((err: Error) => {
-                    reject(err);
-                });
-        });
+        // 直接返回 Promise 链；曾用 new Promise 包裹且 stream 分支只 return 不 resolve，外层永久 pending
+        return this.instance
+            .request(config as AxiosRequestConfig<T>)
+            .then(res => {
+                switch (res.config.responseType) {
+                    case 'arraybuffer':
+                        if (config!.decode) {
+                            const dec = config!.decode
+                            const buf = new Uint8Array(res.data as ArrayBuffer)
+                            return typeof dec === 'function' ? dec(buf) : dec.decode(buf)
+                        }
+                        break
+                    case 'stream':
+                        if (config!.stream) {
+                            const s = config!.stream
+                            return typeof s === 'function' ? s(res.data) : s.stream(res.data)
+                        }
+                        break
+                }
+                return res.data as T;
+            });
     }
 
     /** 单独抽离的`post`工具函数 */

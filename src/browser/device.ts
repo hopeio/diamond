@@ -7,16 +7,17 @@ export const enum DeviceType {
 export function getDeviceType(): DeviceType {
   const ua = navigator.userAgent
 
+  // 平板判定必须先行：Android 平板 UA 含 "Android" 不含 "Mobi"，曾被 Mobile 分支截胡永判成手机
+  if (/iPad|Tablet|PlayBook|Silk|Android(?!.*Mobi)/i.test(ua)) {
+    return DeviceType.Tablet
+  }
+
   if (/Mobi|Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)) {
     return DeviceType.Mobile
   }
 
-  if (/iPad|Tablet|PlayBook|Silk|(Android(?!.*Mobi))/i.test(ua)) {
-    return DeviceType.Tablet
-  }
-
-  // 触摸屏 + 小屏幕也视为平板
-  if (navigator.maxTouchPoints > 1 && window.screen.width < 1280) {
+  // iPadOS 13+ 用桌面版 Macintosh UA，靠多点触摸识别；触摸屏 + 小屏幕也视为平板
+  if (navigator.maxTouchPoints > 1 && (/Macintosh/i.test(ua) || window.screen.width < 1280)) {
     return DeviceType.Tablet
   }
 

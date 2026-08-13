@@ -1,9 +1,13 @@
-export async function loading<T=any>(title:string,handler: ()=>Promise<T>) {
+export async function loading<T=any>(title:string,handler: ()=>Promise<T>): Promise<T> {
     uni.showLoading({
         title: title,
     })
-    await handler()
-    uni.hideLoading()
+    // handler 抛错也必须关闭 loading，否则全屏遮罩永远卡住；结果也要返回给调用方
+    try {
+        return await handler()
+    } finally {
+        uni.hideLoading()
+    }
 }
 
 /**

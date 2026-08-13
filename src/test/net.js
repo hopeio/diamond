@@ -1,4 +1,5 @@
-function supportIPv6xhr(url){
+// 草稿：XHR 版实现（与 browser/net.ts 同款；ontimeout 必须补上否则超时永久 pending）
+export function supportIPv6xhr(url){
     return new Promise((resolve) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
@@ -11,6 +12,9 @@ function supportIPv6xhr(url){
         };
         xhr.onerror = (e) => {
             console.log(e)
+            resolve(false)
+        };
+        xhr.ontimeout = () => {
             resolve(false)
         };
         xhr.send();

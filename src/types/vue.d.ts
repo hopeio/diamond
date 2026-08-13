@@ -1,26 +1,5 @@
-import Vue, { VNode } from "vue";
-
-declare module "*.tsx" {
-  import Vue from "compatible-vue";
-  export default Vue;
-}
-
-declare global {
-  namespace JSX {
-    interface Element extends VNode {}
-    interface ElementClass extends Vue {}
-    interface ElementAttributesProperty {
-      $props: any;
-    }
-    interface IntrinsicElements {
-      [elem: string]: any;
-    }
-    interface IntrinsicAttributes {
-      [elem: string]: any;
-    }
-  }
-}
-
+// Vue3 项目通用资源模块声明；Vue2 时代的 JSX/compatible-vue 声明已移除
+// （Vue3 无默认导出，且 JSX 类型由 vue 自带）
 declare module "*.vue" {
   import type { DefineComponent } from "vue";
   const component: DefineComponent<{}, {}, any>;

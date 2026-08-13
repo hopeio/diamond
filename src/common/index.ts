@@ -1,6 +1,5 @@
 export * from './array'
 export * from './cookie'
-export * from './err'
 export * from './global'
 export * from './idmap'
 export * from './object'

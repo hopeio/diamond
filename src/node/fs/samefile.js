@@ -1,24 +1,18 @@
 import crypto from 'crypto';
 import fs from 'fs';
 
-export async function calculateFileHash(filePath) {
-    try {
-        // 读取文件内容
-        const fileContent = await fs.promises.readFile(filePath);
-
-        // 创建一个SHA-256哈希对象
+/**
+ * 计算文件 SHA-256。
+ * 流式读取避免大文件整载内存；错误交由调用方处理（曾算完只 console.log、吞错返回 undefined）。
+ * @param filePath {string}
+ * @return {Promise<string>} hex 哈希值
+ */
+export function calculateFileHash(filePath) {
+    return new Promise((resolve, reject) => {
         const hash = crypto.createHash('sha256');
-
-        // 更新哈希对象的内容
-        hash.update(fileContent);
-
-        // 计算哈希值
-        const hashValue = hash.digest('hex');
-
-        console.log(`File ${filePath} hash: ${hashValue}`);
-    } catch (error) {
-        console.error('Error calculating file hash:', error);
-    }
+        const stream = fs.createReadStream(filePath);
+        stream.on('error', reject);
+        stream.on('data', (chunk) => hash.update(chunk));
+        stream.on('end', () => resolve(hash.digest('hex')));
+    });
 }
-
-

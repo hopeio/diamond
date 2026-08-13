@@ -43,7 +43,8 @@ declare global {
         wx: any;
         WeixinJSBridge: any;
         __wxjs_environment: string;
-        __APP__: App<Element>;
+        // Vue App 实例；不引 vue 类型避免非 Vue 消费方类型解析失败
+        __APP__: any;
         webkitCancelAnimationFrame: (handle: number) => void;
         mozCancelAnimationFrame: (handle: number) => void;
         oCancelAnimationFrame: (handle: number) => void;
@@ -73,7 +74,7 @@ declare global {
     type ElRef<T extends HTMLElement = HTMLDivElement> = Nullable<T>;
 
     type ForDataType<T> = {
-        [P in T]?: ForDataType<T[P]>;
+        [P in keyof T]?: ForDataType<T[P]>;
     };
 
     type AnyFunction<T> = (...args: any[]) => T;
@@ -85,7 +86,7 @@ declare global {
 
     type Nullable<T> = T | null;
 
-    type NonNullable<T> = T extends null | undefined ? never : T;
+    // NonNullable 为 TS 标准库内置类型，此处不再重复声明
 
     type Recordable<T = any> = Record<string, T>;
 
@@ -117,10 +118,6 @@ declare global {
 
     interface WheelEvent {
         path?: EventTarget[];
-    }
-
-    interface ImportMetaEnv extends ViteEnv {
-        __: unknown;
     }
 
     interface Fn<T = any, R = T> {

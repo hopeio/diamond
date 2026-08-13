@@ -1,18 +1,18 @@
-
-import  fs from 'fs'
+import fs from 'fs'
+import path from 'path'
 
 export function copyDir(src, dest) {
-    if (!fs.existsSync(dest)){
-        fs.mkdirSync(dest)
-    }
+    // recursive：父目录不存在时不再 ENOENT，已存在也不报错
+    fs.mkdirSync(dest, { recursive: true })
     fs.readdirSync(src).forEach(
-        file=>{
-            let path = src+"/"+file;
-            let stat = fs.statSync(path);
+        file => {
+            const srcPath = path.join(src, file)
+            const destPath = path.join(dest, file)
+            const stat = fs.statSync(srcPath)
             if (stat.isDirectory()) {
-                copyDir(path, dest+"/"+file);
-            }else {
-                fs.copyFileSync(path,dest+"/"+file)
+                copyDir(srcPath, destPath)
+            } else {
+                fs.copyFileSync(srcPath, destPath)
             }
         }
     )

@@ -21,9 +21,17 @@ class Client {
             body: JSON.stringify(body),
             method: method
         })
+        // 网关 502/HTML 响应时直接 res.json() 会抛 SyntaxError，错误形态与业务错误码不一致
+        const text = await res.text()
+        let data: any
+        try {
+            data = JSON.parse(text)
+        } catch {
+            data = text
+        }
         return {
             status: res.status,
-            data: await res.json(),
+            data,
             headers: res.headers,
         }
     }
@@ -47,6 +55,10 @@ class Client {
     private iv: string = 'wNSOYIB1k1DjY5lA'
 
     setToken(accessToken: string, refreshToken: string) {
+        // accessKey 取前 16 字节做 AES-128 密钥，短 token 会在加密时抛难排查的 Invalid key length
+        if (accessToken.length < 16) {
+            throw new Error("invalid accessToken: length must be >= 16")
+        }
         this.accessToken = accessToken
         this.accessKey = accessToken.slice(0, 16)
         this.refreshToken = refreshToken
@@ -75,7 +87,10 @@ class Client {
             const header = calHeader(channel, key)
             body =  {header, body}
         }
-        let uri = Channel.WoHome
+        // 注意：官方 SDK 按真实 channel 拼路径（wostore/wocloud 各自独立），这里统一折叠到 api-user。
+        // 该组合（api-user 路径 + header 内真实 channel + clientSecret 加密）经线上 uniapp 登录验证可用，
+        // 服务端接受；改回官方拼法需连同密钥选择一起联调验证，不要单独改动。
+        let uri: string = Channel.WoHome
         if (channel != Channel.WoHome){
             uri = Channel.APIUser
         }
@@ -87,26 +102,32 @@ class Client {
             url = `${this._proxy}/${uri}/${api}`
         }
         const {status, data} = await this._fetch(url, "POST", headers, body)
-        if(status > 399) {
-            if(this._failCallback){
-                this._failCallback(`request failed: ${status}, data: ${data}`)
-            }else throw new Error(`request failed: ${status}, data: ${data}`)
+        // failCallback 是失败通知（消费方可在其中 toast/跳登录，消息前缀是既定协议不要改动）；
+        // 回调后必须 throw 终止流程，曾继续往下走把失败数据当成功返回
+        const fail = (msg: string): never => {
+            this._failCallback?.(msg)
+            throw new Error(msg)
+        }
+        if (status > 399) {
+            fail(`request failed: ${status}, data: ${typeof data === "string" ? data : JSON.stringify(data)}`)
         }
         if (data.STATUS != "200") {
-            if(this._failCallback){
-                this._failCallback(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
-            }else throw new Error(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
+            fail(`request failed with status: ${data.STATUS}, msg: ${data.MSG}`)
         }
         if (data.RSP.RSP_CODE != "0000") {
             // 1001 未登录
-            if(this._failCallback){
-                this._failCallback(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
-            }else throw new Error(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
+            fail(`request failed with rsp_code: ${data.RSP.RSP_CODE},rep_desc: ${data.RSP.RSP_DESC}`)
         }
 
         if (typeof data.RSP.DATA === "string"){
             if (data.RSP.DATA !== ""){
-                return JSON.parse(await this.decrypt(data.RSP.DATA, channel))
+                const plain = await this.decrypt(data.RSP.DATA, channel)
+                // 部分接口 DATA 是加密的纯字符串而非 JSON，解析失败按原文返回
+                try {
+                    return JSON.parse(plain)
+                } catch {
+                    return plain as T
+                }
             }
         }
          return data.RSP.DATA
@@ -133,6 +154,9 @@ class Client {
         return this.request(Channel.WoHome, key, param, other)
     }
 
+    // 密钥选择与官方 SDK 有意不同（官方仅 api-user 用 clientSecret）：
+    // 登录接口走 wostore 通道时 accessKey 尚为空，只能用 clientSecret；
+    // 该组合与上面 URL 折叠配套，经线上验证可用，勿单独改动
     async encrypt(data: string, channel: string): Promise<string> {
         try {
             let key = this.accessKey;

@@ -11,6 +11,10 @@ export function supportIPv6(url: string): Promise<boolean> {
         xhr.onerror = () => {
             resolve(false)
         };
+        // 超时后 readyState===4 且 status===0，上面的分支不会 resolve；不补 ontimeout 会永久 pending
+        xhr.ontimeout = () => {
+            resolve(false)
+        };
 
         xhr.send();
     })

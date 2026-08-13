@@ -1,5 +1,7 @@
 import { expect, test } from 'vitest'
-import {AES128CBCDecrypt,AES128CBCEncrypt,decrypt,encrypt} from './index'
+// node 变体不再从 index 导出（浏览器打包不能拖 Node 内置模块），测试直接引文件做交叉验证
+import {AES128CBCDecrypt,AES128CBCEncrypt} from './node.js'
+import {decrypt,encrypt} from './index'
 
 
 

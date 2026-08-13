@@ -52,7 +52,7 @@ const globals = {
 export default defineConfig({
     plugins: [
         dts({
-            outDir: "dist",
+            outDirs: ["dist"],
             entryRoot: 'src',
             tsconfigPath: 'tsconfig.json',
             // 声明产物只覆盖 src 且排除测试；与 tsconfig 的 include 解耦，

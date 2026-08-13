@@ -13,8 +13,9 @@ export enum SpaceType {
 export const DefaultClientSecret = "XFmi9GS2hzk98jGX"
 export const DefaultClientID = "1001000021"
 
+// 与官方 SDK 对齐从 1 起（Go 侧 iota+1）；曾从 0 起导致所有排序语义整体错位一档
 export enum SortType {
-    NameAsc,
+    NameAsc = 1,
     NameDesc,
     SizeAsc,
     SizeDesc,

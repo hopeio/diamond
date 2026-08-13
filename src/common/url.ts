@@ -1,5 +1,6 @@
 export function toUrlParams(obj: Record<string, any>) {
   return Object.entries(obj)
+    .filter(([, value]) => value != null)
     .map(([key, value]) => {
       if (Array.isArray(value)) {
         return value
@@ -21,17 +22,23 @@ export const getQueryByNameHash = (name: string) => {
   return new URLSearchParams(location.hash.split('?')[1]).get(name)
 }
 
-export const isHashMode = typeof location !== 'undefined' && location.hash !== ''
+/** 模块加载时求值会拿到路由初始化前的快照，须每次调用现取 */
+export const isHashMode = () => typeof location !== 'undefined' && location.hash !== ''
 
+/** 先查 search 再查 hash 内 query；精确键名匹配并自动解码（曾用 includes 子串误匹配且不解码） */
 export const getQueryByName = (name: string) => {
-  const queryList = location.href.split('?')[1]?.split('&') || []
-  const curQuery = queryList.find((item) => item.includes(name))
-  return curQuery?.split('=')[1] || ''
+  const u = new URL(location.href)
+  const v = u.searchParams.get(name)
+  if (v != null) return v
+  const hashQuery = u.hash.split('?')[1]
+  if (hashQuery) return new URLSearchParams(hashQuery).get(name) ?? ''
+  return ''
 }
 
 export const parseQueryString = function (): Record<string, string> {
-  const str = location.search
   const objURL: Record<string, string> = {}
-  str.replace(new RegExp('([^?=&]+)(=([^&]*))?', 'g'), (_m, key, _eq, val) => (objURL[key] = val))
+  new URLSearchParams(location.search).forEach((value, key) => {
+    objURL[key] = value
+  })
   return objURL
 }

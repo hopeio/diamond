@@ -11,11 +11,12 @@ export const extractPathList = (tree: any[]): any => {
     if (!tree || tree.length === 0) return [];
     const expandedPaths: Array<number | string> = [];
     for (const node of tree) {
+        expandedPaths.push(node.uniqueId);
         const hasChildren = node.children && node.children.length > 0;
         if (hasChildren) {
-            extractPathList(node.children);
+            // 递归结果曾被丢弃，子树的 uniqueId 全部丢失
+            expandedPaths.push(...extractPathList(node.children));
         }
-        expandedPaths.push(node.uniqueId);
     }
     return expandedPaths;
 };
@@ -175,7 +176,8 @@ export const handleTree = (
     }
 
     function adaptToChildrenList(o: Record<string, any>) {
-        if (childrenListMap[o[config.id]] !== null) {
+        // != null 同时排除 undefined；曾用 !== null 给每个叶子节点写入 children: undefined
+        if (childrenListMap[o[config.id]] != null) {
             o[config.childrenList] = childrenListMap[o[config.id]];
         }
         if (o[config.childrenList]) {

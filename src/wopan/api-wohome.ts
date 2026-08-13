@@ -80,8 +80,8 @@ export function GetDownloadUrlV2(fidList: string[]): Promise<GetDownloadUrlV2Dat
         "clientId":  DefaultClientID,
     }, JsonSecret)
 }
-// 下载集合压缩包
-export function GetDownloadUrl(spaceType:string,fidList: string[]): Promise<DownloadUrl> {
+// 下载集合压缩包；服务端返回数组（官方 []GetDownloadUrlData），曾声明单对象导致 res.downloadUrl 取空
+export function GetDownloadUrl(spaceType:string,fidList: string[]): Promise<DownloadUrl[]> {
     return  client.requestWoHome("GetDownloadUrl", {
         "fidList":   fidList,
         "spaceType": spaceType,
@@ -151,7 +151,8 @@ export function VerifySetPwd(): Promise<VerifySetPwd> {
         }, JsonSecret)
 }
 
+// 对照官方：WoHome 通道 + clientId；曾走 Wostore 且缺 clientId，套餐查询必失败
 export function FCloudProductOrdListQry(): Promise<void> {
-    return  client.request(Channel.Wostore, "FCloudProductOrdListQry",{
-     }, {...JsonSecret, qryType: "1",})
+    return  client.request(Channel.WoHome, "FCloudProductOrdListQry",{
+     }, {...JsonSecret, qryType: "1", clientId: DefaultClientID})
 }

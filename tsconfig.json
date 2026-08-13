@@ -4,6 +4,8 @@
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
+    // Node 22 原生跑 TS 源码要求相对导入带 .ts 扩展（node/fs 被 toolbox 脚本直接运行）
+    "allowImportingTsExtensions": true,
     "sourceMap": true,
     "types": ["node", "@dcloudio/types", "vite/client"],
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
