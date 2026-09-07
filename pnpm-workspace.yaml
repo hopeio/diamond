@@ -2,6 +2,10 @@ packages:
   - '.'
 allowBuilds:
   '@parcel/watcher': true
+# uni 的 vite 插件硬编码 preserveSymlinks: true，按符号链接路径解析依赖。
+# 消费端（如 client/uniapp）直接打包本包源码时，传递依赖（如 qs -> side-channel）
+# 在 isolated 布局下解析不到，必须全量提升，与 client/uniapp 同理。
+shamefullyHoist: true
 # pnpm 11 起 overrides 等配置只认本文件（package.json 的 pnpm 字段与 .npmrc 均被忽略）。
 # 安全覆盖：GHSA-mw96-cpmx-2vgc（rollup 路径穿越）、GHSA-48c2-rrv3-qjmp（yaml 栈溢出）
 overrides:
