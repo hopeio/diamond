@@ -1,6 +1,6 @@
 import {Channel, DefaultClientSecret} from "./const";
 import {decrypt, encrypt} from "../common/crypto";
-import SparkMD5 from "spark-md5";
+import { md5 } from '../md5'
 import type { Fetch, HttpResponse } from '../types'
 class Client {
     private static instance: Client
@@ -205,7 +205,7 @@ function calHeader(channel: string, key: string): Header {
     const resTime = Date.now();
     const reqSeq = Math.floor(Math.random() * 8999) + 1e5;
     const version = "";
-    const sign = SparkMD5.hash(`${key}${resTime}${reqSeq}${channel}${version}`);
+    const sign = md5(`${key}${resTime}${reqSeq}${channel}${version}`);
     return {
         key: key,
         resTime: resTime,

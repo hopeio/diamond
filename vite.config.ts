@@ -45,7 +45,6 @@ function getExternal(): string[] {
 
 
 const globals = {
-    'spark-md5': 'SparkMD5', // 告诉Rollup全局变量名
     dayjs: 'dayjs'
 }
 
